@@ -1,0 +1,8 @@
+{
+    "token":"[bottoken]",
+    "owner": "[ownerid]",
+    "prefix": "[choose a prefix]",
+    "mongourl": "[mongodb url]",
+    "debug": false,
+    "respondToInvalid": false
+}

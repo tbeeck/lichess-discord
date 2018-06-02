@@ -3,15 +3,8 @@ const axios = require('axios');
 var User = require('./userSchema').User;
 
 var commands = {
-    "tim": {
-        usage: "",
-        description: "tells you who tim is",
-        process: ( bot, msg ) => {
-          msg.channel.send("Tim is known as 'doorbell'");
-        }
-    },
     "setuser": {
-    	usage: "setuser <lichess name>",
+    	usage: "<lichess name>",
     	description: "set your lichess username",
     	process: ( bot, msg, suffix ) => {
     		var authorId = msg.author.id;

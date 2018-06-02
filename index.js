@@ -13,8 +13,7 @@ const bot = new Discord.Client({
 });
 
 // Set up commands
-const commands = require('./commands');
-console.log(commands);
+const commands = require('./commands').commands;
 
 bot.on("ready", () => {
     bot.user.setActivity('lichess.org'); //you can set a default game
@@ -35,22 +34,22 @@ bot.on("message", ( msg ) => {
     var cmd = commands[ cmdTxt ];
     //start special commands
     if ( cmdTxt === "help" ) {
-        msg.author.send("Available Commands:", () => {
-            for( var cmd in commands ) {
+        var helpText = "";
+        for( var cmd in commands ) {
                 var info = config.prefix + cmd;
-                var usage = commands[cmd].usage;
+                var usage = commands[ cmd ].usage;
                 if( usage ) {
                     info += " " + usage;
                 }
-                var description = commands[cmd].description;
+                var description = commands[ cmd ].description;
                 if(description){
                     info += "\n\t" + description;
                 }
-                bot.send(msg.author,"```" + info + "```");
-            }
-        });
+                helpText += "```" + info + "```";
+        }
+        msg.author.send("Available Commands:" + helpText);
     }
-    if ( cmdTxt === "stop" && msg.author.id == "76180331211796480" ) {
+    else if ( cmdTxt === "stop" && msg.author.id == "76180331211796480" ) {
         bot.logout();
         process.exit();
     }
@@ -60,8 +59,9 @@ bot.on("message", ( msg ) => {
             cmd.process( bot, msg, suffix );
         } 
         catch ( e ) {
+            console.log("command failed:\n" + e.stack)
             if ( config.debug ) {
-                bot.sendMessage( msg.channel, "command " + cmdTxt + " failed :(\n" + e.stack );
+                msg.channel.send("command " + cmdTxt + " failed :(\n" + e.stack );
             }
         }
     } 

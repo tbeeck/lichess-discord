@@ -19,11 +19,12 @@ var commands = {
     				});
     			}
     			else {
-    				if ( new Date() - result.dateAdded > ( 60 * 60 * 1000 ) ) { // 1 hour
+                    console.log(result.dateAdded);
+    				if ( ( new Date() - result.dateAdded ) < ( 60 * 60 * 1000 ) ) { // 1 hour
     					msg.channel.send("You may update your name once per hour. Try again later.");
     				}
     				else {
-    					var newValues = { $set: { lichessName: username, dateAdded: Date.now } };
+    					var newValues = { $set: { lichessName: username, dateAdded: new Date() } };
     					User.updateOne({ userId: authorId }, newValues, ( err, updateResult ) => {
     						msg.channel.send("User updated! " + msg.author.username + " is now lichess user " + username);
     					});
@@ -100,15 +101,12 @@ function formatSummary ( data ) {
 		"```";
 	return formattedMessage;
 }
+
+
 // Get the name, rating and progress of the most played mode
 function getMostPlayed( list ) {
 	var mostPlayed;
-	var modes = [ ["Blitz", list.blitz.games, list.blitz.rating, list.blitz.prog],
-								["Bullet", list.bullet.games, list.bullet.rating, list.bullet.prog],
-								["Correspondence", list.correspondence.games, list.correspondence.rating, list.correspondence.prog],
-								["Rapid", list.rapid.games, list.rapid.rating, list.rapid.prog],
-								["UltraBullet", list.ultraBullet.games, list.ultraBullet.rating, list.ultraBullet.prog],
-								["Classical", list.classical.games, list.classical.rating, list.classical.prog] ];
+    var modes = modesArray( list );
 	var max = Math.max(modes[0][1],modes[1][1],modes[2][1],modes[3][1],modes[4][1],modes[5][1]);
 	for ( var i = 0; i < modes.length; i++ ) {
 		if ( modes[i][1] === max ) {
@@ -121,12 +119,7 @@ function getMostPlayed( list ) {
 // Get string with highest rating formatted for summary
 function getHighestRating ( list ) {
 	var highestRating;
-	var modes = [ ["Blitz", list.blitz.games, list.blitz.rating, list.blitz.prog],
-								["Bullet", list.bullet.games, list.bullet.rating, list.bullet.prog],
-								["Correspondence", list.correspondence.games, list.correspondence.rating, list.correspondence.prog],
-								["Rapid", list.rapid.games, list.rapid.rating, list.rapid.prog],
-								["UltraBullet", list.ultraBullet.games, list.ultraBullet.rating, list.ultraBullet.prog],
-								["Classical", list.classical.games, list.classical.rating, list.classical.prog] ];
+    var modes = modesArray( list );
 	var max = Math.max(modes[0][2],modes[1][2],modes[2][2],modes[3][2],modes[4][2],modes[5][2]);
 	for ( var i = 0; i < modes.length; i++ ) {
 		if ( modes[i][2] === max ) {
@@ -135,6 +128,16 @@ function getHighestRating ( list ) {
 	}
 	var formattedMessage = " (" + highestRating[2] + " " + highestRating[3] + " " + highestRating[0] + ")";
 	return formattedMessage;
+}
+// For sorting through modes... lichess api does not put these in an array so we do it ourselves
+function modesArray ( list ) {
+    return [ ["Blitz", list.blitz.games, list.blitz.rating, list.blitz.prog],
+             ["Bullet", list.bullet.games, list.bullet.rating, list.bullet.prog],
+             ["Correspondence", list.correspondence.games, list.correspondence.rating, list.correspondence.prog],
+             ["Rapid", list.rapid.games, list.rapid.rating, list.rapid.prog],
+             ["UltraBullet", list.ultraBullet.games, list.ultraBullet.rating, list.ultraBullet.prog],
+             ["Classical", list.classical.games, list.classical.rating, list.classical.prog] ];
+
 }
 // Get winrate percentage
 function getWinrate ( list ) {

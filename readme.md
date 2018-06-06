@@ -19,5 +19,11 @@
     Returns your current lichess username
 !summary [username]
     A summary of your profile or a given profile
-    
+!recent [rated/unrated]
+    share your most recent game
+!stats [user] <gamemode>
+    Summarises your stats for a given game mode
+!playing [user]
+    shares your ongoing game
+
 ```

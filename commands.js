@@ -145,7 +145,6 @@ var commands = {
                          msg.channel.send("You need to set your username first with `setuser`");
                      }
                      else {
-                        console.log(result.lichessName);
                         sendCurrent( msg, result.lichessName );
                      }
                 });
@@ -220,7 +219,6 @@ function formatCurrent ( data ) {
 // FOrmat stats
 function formatStats ( list, mode ) {
     var formattedMessage;
-    console.log(list);
     if ( list.perfs[mode] ) {
         formattedMessage =  
             "Stats for user " + list.username + ":\n" +
@@ -315,7 +313,6 @@ function getHighestRating ( list ) {
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
 function modesArray ( list ) {
-    //console.log( list );
     var array = [];
     // Count up number of keys...
     var count = 0;

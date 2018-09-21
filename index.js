@@ -81,12 +81,12 @@ bot.on("message", ( msg ) => {
 process.on('uncaughtException', (err) => {
     const errorMsg = err.stack.replace(new RegExp(`${__dirname}/`, 'g'), './');
     console.error('Uncaught Exception: ', errorMsg);
-    // process.exit(1); //Eh, should be fine, but maybe handle this?
+    process.exit(1); //Gracefully exit so systemd service may restart
 });
 
 process.on('unhandledRejection', err => {
     console.error('Uncaught Promise Error: ', err);
-    // process.exit(1); //Eh, should be fine, but maybe handle this?
+    process.exit(1); //Gracefully exit so systemd service may restart
 });
 
 bot.login(config.token);

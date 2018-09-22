@@ -240,11 +240,11 @@ function formatSummary ( data ) {
 		data.url + "\n" +
 		"```" +
 		"User: "+ data.username + getHighestRating( data.perfs ) + " (" + ( data.online ? "online" : "offline" ) + ")"+"\n"+ 
-		"Games: " + data.count.all + " (" + data.count.rated + " rated)\n"+
+		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
 		"Favorite mode: " + getMostPlayed( data.perfs ) + "\n" + 
         "Time played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
 		"Completion rate: " + data.completionRate + "\n" +
-		"Win rate: " + getWinrate( data ) + "\n" +
+		"Win expectancy: " + getWinExpectancy( data ) + "\n" +
 		"```";
 	return formattedMessage;
 }
@@ -276,6 +276,7 @@ function getMostPlayed( list ) {
     var modes = modesArray( list );
 	
     var mostPlayedMode = modes[0][0];
+    var mostPlayedRD = modes[0][1].rd;
     var mostPlayedProg = modes[0][1].prog;
     var mostPlayedRating = modes[0][1].rating;
     var mostPlayedGames = modes[0][1].games;
@@ -284,13 +285,22 @@ function getMostPlayed( list ) {
         if ( modes[i][0] != 'puzzle' ) {
             if ( modes[i][1].games > mostPlayedGames) {
                 mostPlayedMode = modes[i][0];
+                mostPlayedRD = modes[i][1].rd;
                 mostPlayedProg = modes[i][1].prog;
                 mostPlayedRating = modes[i][1].rating;
                 mostPlayedGames = modes[i][1].games;
             }
         }
     } 
-    var formattedMessage = mostPlayedMode + " (" + mostPlayedGames + " games, rated " + mostPlayedRating + " (" + mostPlayedProg + "))";
+    if (mostPlayedProg > 0)
+        mostPlayedProg = " ▲" + mostPlayedProg;
+    else if (mostPlayedProg < 0)
+        mostPlayedProg = " ▼" + Math.abs( mostPlayedProg );
+    else
+        mostPlayedProg = "";
+
+    var formattedMessage = mostPlayedMode + " (" + mostPlayedGames + " games, " +
+        mostPlayedRating + " ± " + ( 2 * mostPlayedRD ) + mostPlayedProg + ")";
 	return formattedMessage;
 }
 // Get string with highest rating formatted for summary
@@ -298,17 +308,28 @@ function getHighestRating ( list ) {
     var modes = modesArray( list );
 
     var highestMode = modes[0][0];
+    var highestRD = modes[0][1].rd;
     var highestProg = modes[0][1].prog;
     var highestRating = modes[0][1].rating;
+    var highestGames = modes[0][1].games;
     for ( var i = 0; i < list.length; i++ ) {
         if ( modes[i][1].rating > highestRating) {
             highestRating = modes[i].rating;
             highestMode = modes[i][0];
+            highestRD = modes[i][1].rd;
             highestProg = modes[i][1].prog;
+            highestGames = modes[i][1].games;
         }
     }
+    if (highestProg > 0)
+        highestProg = " ▲" + highestProg;
+    else if (highestProg < 0)
+        highestProg = " ▼" + Math.abs( highestProg );
+    else
+        highestProg = "";
 
-	var formattedMessage = " (" + highestRating + " " + highestProg + " " + highestMode + ")";
+    var formattedMessage = " (" + highestMode + " " + highestGames + " games, " +
+        highestRating + " ± " + ( 2 * highestRD ) + highestProg + ")";
 	return formattedMessage;
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
@@ -325,9 +346,10 @@ function modesArray ( list ) {
     }
     return array;
 }
-// Get winrate percentage
-function getWinrate ( list ) {
-	return ( list.count.win / list.count.all * 100 )+ "%";
+// Get win/result expectancy (draws count as 0.5)
+function getWinExpectancy ( list ) {
+    var score = list.count.win + ( list.count.draw / 2 );
+	return ( score / list.count.all * 100 ).toFixed(1)+ "%";
 }
 function secondsToHours ( seconds ) {
     return ( ( seconds / 60 ) / 60 ).toFixed(2);

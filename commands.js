@@ -276,6 +276,7 @@ function getMostPlayed( list ) {
     var modes = modesArray( list );
 	
     var mostPlayedMode = modes[0][0];
+    var mostPlayedRD = modes[0][1].rd;
     var mostPlayedProg = modes[0][1].prog;
     var mostPlayedRating = modes[0][1].rating;
     var mostPlayedGames = modes[0][1].games;
@@ -284,6 +285,7 @@ function getMostPlayed( list ) {
         if ( modes[i][0] != 'puzzle' ) {
             if ( modes[i][1].games > mostPlayedGames) {
                 mostPlayedMode = modes[i][0];
+                mostPlayedRD = modes[i][1].rd;
                 mostPlayedProg = modes[i][1].prog;
                 mostPlayedRating = modes[i][1].rating;
                 mostPlayedGames = modes[i][1].games;
@@ -294,7 +296,9 @@ function getMostPlayed( list ) {
         mostPlayedProg = "+" + mostPlayedProg;
     else if (mostPlayedProg == 0)
         mostPlayedProg = "=0";
-    var formattedMessage = mostPlayedMode + " (" + mostPlayedGames + " games, rated " + mostPlayedRating + " " + mostPlayedProg + ")";
+
+    var formattedMessage = mostPlayedMode + " (" + mostPlayedGames + " games, " +
+        mostPlayedRating + " ± " + ( 2 * mostPlayedRD ) + " " + mostPlayedProg + ")";
 	return formattedMessage;
 }
 // Get string with highest rating formatted for summary
@@ -302,13 +306,17 @@ function getHighestRating ( list ) {
     var modes = modesArray( list );
 
     var highestMode = modes[0][0];
+    var highestRD = modes[0][1].rd;
     var highestProg = modes[0][1].prog;
     var highestRating = modes[0][1].rating;
+    var highestGames = modes[0][1].games;
     for ( var i = 0; i < list.length; i++ ) {
         if ( modes[i][1].rating > highestRating) {
             highestRating = modes[i].rating;
             highestMode = modes[i][0];
+            highestRD = modes[i][1].rd;
             highestProg = modes[i][1].prog;
+            highestGames = modes[i][1].games;
         }
     }
     if (highestProg > 0)
@@ -316,7 +324,8 @@ function getHighestRating ( list ) {
     else if (highestProg == 0)
         highestProg = "=0";
 
-	var formattedMessage = " (" + highestMode + " " + highestRating + " " + highestProg + ")";
+    var formattedMessage = " (" + highestMode + " " + highestGames + " games, " +
+        highestRating + " ± " + ( 2 * highestRD ) + " " + highestProg + ")";
 	return formattedMessage;
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves

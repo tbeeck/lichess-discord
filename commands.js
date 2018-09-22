@@ -244,7 +244,7 @@ function formatSummary ( data ) {
 		"Favorite mode: " + getMostPlayed( data.perfs ) + "\n" + 
         "Time played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
 		"Completion rate: " + data.completionRate + "\n" +
-		"Win rate: " + getWinrate( data ) + "\n" +
+		"Win expectancy: " + getWinExpectancy( data ) + "\n" +
 		"```";
 	return formattedMessage;
 }
@@ -325,9 +325,10 @@ function modesArray ( list ) {
     }
     return array;
 }
-// Get winrate percentage
-function getWinrate ( list ) {
-	return ( list.count.win / list.count.all * 100 )+ "%";
+// Get win/result expectancy (draws count as 0.5)
+function getWinExpectancy ( list ) {
+    var score = list.count.win + ( list.count.draw / 2 );
+	return ( score / list.count.all * 100 ).toFixed(1)+ "%";
 }
 function secondsToHours ( seconds ) {
     return ( ( seconds / 60 ) / 60 ).toFixed(2);

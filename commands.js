@@ -240,7 +240,7 @@ function formatSummary ( data ) {
 		data.url + "\n" +
 		"```" +
 		"User: "+ data.username + getHighestRating( data.perfs ) + " (" + ( data.online ? "online" : "offline" ) + ")"+"\n"+ 
-		"Games: " + data.count.all + " (" + data.count.rated + " rated)\n"+
+		"Games: " + data.count.rated + " rated, " + data.count.unrated + " unrated\n"+
 		"Favorite mode: " + getMostPlayed( data.perfs ) + "\n" + 
         "Time played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
 		"Completion rate: " + data.completionRate + "\n" +
@@ -290,7 +290,11 @@ function getMostPlayed( list ) {
             }
         }
     } 
-    var formattedMessage = mostPlayedMode + " (" + mostPlayedGames + " games, rated " + mostPlayedRating + " (" + mostPlayedProg + "))";
+    if (mostPlayedProg > 0)
+        mostPlayedProg = "+" + mostPlayedProg;
+    else if (mostPlayedProg == 0)
+        mostPlayedProg = "=0";
+    var formattedMessage = mostPlayedMode + " (" + mostPlayedGames + " games, rated " + mostPlayedRating + " " + mostPlayedProg + ")";
 	return formattedMessage;
 }
 // Get string with highest rating formatted for summary
@@ -312,7 +316,7 @@ function getHighestRating ( list ) {
     else if (highestProg == 0)
         highestProg = "=0";
 
-	var formattedMessage = " (" + highestRating + " " + highestProg + " " + highestMode + ")";
+	var formattedMessage = " (" + highestMode + " " + highestRating + " " + highestProg + ")";
 	return formattedMessage;
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves

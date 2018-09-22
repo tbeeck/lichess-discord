@@ -169,6 +169,7 @@ function sendSummary ( msg, username, favoriteMode ) {
 		})
 		.catch( ( err ) => {
 			console.log("Error in sendSummary");
+      console.log(err);
 			msg.channel.send("An error occured with that request!");
 		});
 }
@@ -279,31 +280,24 @@ function getMostPlayed( list, favoriteMode ) {
 // Get string with highest rating formatted for summary
 function getHighestRating ( list ) {
     var modes = modesArray( list );
-
+    console.log(modes);
     var highestMode = modes[0][0];
     var highestRD = modes[0][1].rd;
-    var highestProg = modes[0][1].prog;
     var highestRating = modes[0][1].rating;
     var highestGames = modes[0][1].games;
-    for ( var i = 0; i < list.length; i++ ) {
+    for ( var i = 0; i < modes.length; i++ ) {
+        if (modes[i][0] === "puzzle") continue; // Skip puzzle rating
+        console.log(modes[i][1].rating + " vs " + highestRating);
         if ( modes[i][1].rating > highestRating) {
-            highestRating = modes[i].rating;
+            highestRating = modes[i][1].rating;
             highestMode = modes[i][0];
             highestRD = modes[i][1].rd;
-            highestProg = modes[i][1].prog;
-            highestGames = modes[i][1].games;
         }
     }
-    if (highestProg > 0)
-        highestProg = " 📈" + highestProg;
-    else if (highestProg < 0)
-        highestProg = " 📉" + Math.abs( highestProg );
-    else
-        highestProg = "";
 
-    var formattedMessage = " (" + highestMode + " " + highestGames + " games, " +
-        highestRating + " ± " + ( 2 * highestRD ) + highestProg + ")";
-	return formattedMessage;
+    var formattedMessage = " (" + highestRating + " ± " +
+      ( 2 * highestRD ) + " " + highestMode + " with " + highestGames + " games)";
+	  return formattedMessage;
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
 function modesArray ( list ) {
@@ -315,7 +309,7 @@ function modesArray ( list ) {
                 count++;
     // Set up the array.
     for ( var i = 0; i < count; i++ ) {
-        array[i] = Object.entries( list )[ i ];
+        array[i] = Object.entries(list)[i];
     }
     return array;
 }

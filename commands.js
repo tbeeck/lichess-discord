@@ -240,7 +240,7 @@ function formatSummary ( data ) {
 		data.url + "\n" +
 		"```" +
 		"User: "+ data.username + getHighestRating( data.perfs ) + " (" + ( data.online ? "online" : "offline" ) + ")"+"\n"+ 
-		"Games: " + data.count.rated + " rated, " + data.count.unrated + " unrated\n"+
+		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
 		"Favorite mode: " + getMostPlayed( data.perfs ) + "\n" + 
         "Time played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
 		"Completion rate: " + data.completionRate + "\n" +

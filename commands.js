@@ -307,6 +307,10 @@ function getHighestRating ( list ) {
             highestProg = modes[i][1].prog;
         }
     }
+    if (highestProg > 0)
+        highestProg = "+" + highestProg;
+    else if (highestProg == 0)
+        highestProg = "=0";
 
 	var formattedMessage = " (" + highestRating + " " + highestProg + " " + highestMode + ")";
 	return formattedMessage;

@@ -194,7 +194,7 @@ function sendSummary ( msg, username ) {
 function sendGame ( msg, username, rated ) {
     // Accept only the x-ndjson type
     axios.get( 'https://lichess.org/games/export/' + username + "?max=1" + "&rated=" + rated,
-        { headers: { 'Accept': 'application/x-ndjson' } } ) 
+        { headers: { 'Accept': 'application/x-ndjson' } } )
         .then( ( response ) => {
             var formattedMessage = formatGame( response.data );
             msg.channel.send(formattedMessage);
@@ -220,12 +220,12 @@ function formatCurrent ( data ) {
 function formatStats ( list, mode ) {
     var formattedMessage;
     if ( list.perfs[mode] ) {
-        formattedMessage =  
+        formattedMessage =
             "Stats for user " + list.username + ":\n" +
             "```" +
             mode + ": " +
             list.perfs[mode].games + " games, "  + list.perfs[mode].rating  + " (" + list.perfs[mode].prog + ") rating" +
-            "```";  
+            "```";
     }
     else {
         formattedMessage = "That is an invalid mode!";
@@ -236,14 +236,13 @@ function formatStats ( list, mode ) {
 // Returns a summary in discord markup of a user, returns nothing if error occurs.
 function formatSummary ( data ) {
 	var formattedMessage;
-	formattedMessage = 
+	formattedMessage =
 		data.url + "\n" +
 		"```" +
-		"User: "+ data.username + getHighestRating( data.perfs ) + " (" + ( data.online ? "online" : "offline" ) + ")"+"\n"+ 
+		"User: "+ data.username + getHighestRating( data.perfs ) + " (" + ( data.online ? "online" : "offline" ) + ")"+"\n"+
 		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
-		"Favorite mode: " + getMostPlayed( data.perfs ) + "\n" + 
+		"Favorite mode: " + getMostPlayed( data.perfs ) + "\n" +
         "Time played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
-		"Completion rate: " + data.completionRate + "\n" +
 		"Win expectancy: " + getWinExpectancy( data ) + "\n" +
 		"```";
 	return formattedMessage;
@@ -253,16 +252,16 @@ function formatGame ( data ) {
     var formattedMessage, playerLine;
     if ( data.players.white.ratingDiff ) {
         playerLine =
-            data.players.white.user.name + " (" + data.players.white.rating + " " + data.players.white.ratingDiff + ")" + 
+            data.players.white.user.name + " (" + data.players.white.rating + " " + data.players.white.ratingDiff + ")" +
             " vs " + data.players.black.user.name + " (" + data.players.black.rating + " " + data.players.black.ratingDiff + ")" + "\n";
     }
-    else { 
+    else {
         playerLine =
-            data.players.white.user.name + " (" + data.players.white.rating + ")" + 
+            data.players.white.user.name + " (" + data.players.white.rating + ")" +
             " vs " + data.players.black.user.name + " (" + data.players.black.rating + ")" + "\n";
-    
+
     }
-    formattedMessage = 
+    formattedMessage =
         "https://lichess.org/" + data.id + "\n" +
         "```" +
         playerLine +
@@ -274,7 +273,7 @@ function formatGame ( data ) {
 function getMostPlayed( list ) {
 	var mostPlayed;
     var modes = modesArray( list );
-	
+
     var mostPlayedMode = modes[0][0];
     var mostPlayedRD = modes[0][1].rd;
     var mostPlayedProg = modes[0][1].prog;
@@ -291,7 +290,7 @@ function getMostPlayed( list ) {
                 mostPlayedGames = modes[i][1].games;
             }
         }
-    } 
+    }
     if (mostPlayedProg > 0)
         mostPlayedProg = " ▲" + mostPlayedProg;
     else if (mostPlayedProg < 0)

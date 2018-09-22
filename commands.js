@@ -203,12 +203,12 @@ function formatSummary ( data, favoriteMode ) {
 	var formattedMessage;
 	formattedMessage =
 		data.url + "\n" +
-		"```" +
-		"User: "+ data.username + getHighestRating( data.perfs ) + " (" + ( data.online ? "online" : "offline" ) + ")"+"\n"+
+		"```prolog\n" +
+		"User: " + data.username + ( data.online ? " ✅" : " 🔴" ) + getHighestRating( data.perfs ) + "\n"+
 		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
-		"Favorite mode: " + getMostPlayed( data.perfs, favoriteMode ) + "\n" +
-		"Time played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
-		"Win expectancy: " + getWinExpectancy( data ) + "\n" +
+		"Favorite Mode: " + getMostPlayed( data.perfs, favoriteMode ) + "\n" +
+		"Time Played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
+		"Win Expectancy: " + getWinExpectancy( data ) + "\n" +
 		"```";
 	return formattedMessage;
 }
@@ -266,9 +266,9 @@ function getMostPlayed( list, favoriteMode ) {
         }
     }
     if (mostPlayedProg > 0)
-        mostPlayedProg = " ▲" + mostPlayedProg;
+        mostPlayedProg = " ▲" + mostPlayedProg + "📈";
     else if (mostPlayedProg < 0)
-        mostPlayedProg = " ▼" + Math.abs( mostPlayedProg );
+        mostPlayedProg = " ▼" + Math.abs( mostPlayedProg ) + "📉";
     else
         mostPlayedProg = "";
 
@@ -295,9 +295,9 @@ function getHighestRating ( list ) {
         }
     }
     if (highestProg > 0)
-        highestProg = " ▲" + highestProg;
+        highestProg = " 📈" + highestProg;
     else if (highestProg < 0)
-        highestProg = " ▼" + Math.abs( highestProg );
+        highestProg = " 📉" + Math.abs( highestProg );
     else
         highestProg = "";
 

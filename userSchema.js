@@ -9,6 +9,10 @@ var UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  favoriteMode: {
+    type: String,
+    default: ''
+  },
   dateAdded: {
     type: Date,
     default: Date.now

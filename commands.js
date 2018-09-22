@@ -50,12 +50,34 @@ var commands = {
     			});
         }
     },
+    "setgamemode": {
+    	usage: "<game mode>",
+    	description: "set your favorite game mode (puzzle for puzzle mode)",
+    	process: ( bot, msg, suffix ) => {
+    		var authorId = msg.author.id;
+    		var mode = suffix;
+    		User.findOne( { userId: authorId }, ( err, result ) => {
+    			if ( err ) {
+    				console.log( err );
+    			}
+    			if ( !result ) {
+    				msg.channel.send("You need to set your lichess username with setuser!");
+    			}
+    			else {
+    				var newValues = { $set: { favoriteMode: mode } };
+    				User.updateOne({ userId: authorId }, newValues, ( err, updateResult ) => {
+    					msg.channel.send(msg.author.username + " favorite mode updated!");
+    				});
+    			}
+    		});
+    	}
+    },
     "summary": {
         usage: "[username]",
         description: "A summary of your profile or a given profile",
         process: ( bot, msg, suffix ) => {
         	if ( suffix ) {
-        		sendSummary( msg, suffix );
+        		sendSummary( msg, suffix, '' );
         	}
         	else {
         		User.findOne( { userId: msg.author.id }, ( err, result ) => {
@@ -66,7 +88,7 @@ var commands = {
     						msg.channel.send("You need to set your lichess username with setuser!");
     					}
     					else {
-    						sendSummary( msg, result.lichessName );
+    						sendSummary( msg, result.lichessName, result.favoriteMode );
     					}
     			});
         	}
@@ -98,34 +120,6 @@ var commands = {
                     sendGame( msg, result.lichessName, rated );
                 }
             });
-        }
-    },
-    "stats": {
-        usage: "[user] <gamemode>",
-        description: "Summarises your stats for a given game mode",
-        process: ( bot, msg, suffix ) => {
-            suffix = suffix.split( " " );
-            if ( suffix.length < 1 ) {
-                msg.channel.send("This command requires at least a game mode as an argument");
-            }
-            else if ( suffix.length === 1 ) {
-                mode = suffix[0];
-                User.findOne( { userId: msg.author.id }, ( err, result ) => {
-                     if ( err ) {
-                         console.log( err );
-                     }
-                     if ( !result ) {
-                         msg.channel.send("You need to set your username first with `setuser`");
-                     }
-                     else {
-                        sendStats( msg, result.lichessName, mode );
-                     }
-                });
-            }
-            else {
-                // Send name and mode.
-                sendStats( msg, suffix[ 0 ], suffix[ 1 ] );
-            }
         }
     },
     "playing": {
@@ -166,23 +160,11 @@ function sendCurrent ( msg, username ) {
 }
 
 
-// Send stats of a game mode.
-function sendStats ( msg, username, mode ) {
-    axios.get( 'https://lichess.org/api/user/' + username )
-        .then( ( response ) => {
-            var formattedMessage = formatStats( response.data, mode );
-            msg.channel.send(formattedMessage);
-        })
-        .catch( ( err ) => {
-            console.log(err);
-            msg.channel.send("An error occured with that request!");
-        });
-}
 // summary command
-function sendSummary ( msg, username ) {
+function sendSummary ( msg, username, favoriteMode ) {
 	axios.get( 'https://lichess.org/api/user/' + username )
 		.then( ( response ) => {
-			var formattedMessage = formatSummary( response.data );
+			var formattedMessage = formatSummary( response.data, favoriteMode );
 			msg.channel.send(formattedMessage);
 		})
 		.catch( ( err ) => {
@@ -216,33 +198,16 @@ function formatCurrent ( data ) {
     return formattedMessage;
 }
 
-// FOrmat stats
-function formatStats ( list, mode ) {
-    var formattedMessage;
-    if ( list.perfs[mode] ) {
-        formattedMessage =
-            "Stats for user " + list.username + ":\n" +
-            "```" +
-            mode + ": " +
-            list.perfs[mode].games + " games, "  + list.perfs[mode].rating  + " (" + list.perfs[mode].prog + ") rating" +
-            "```";
-    }
-    else {
-        formattedMessage = "That is an invalid mode!";
-    }
-
-    return formattedMessage;
-}
 // Returns a summary in discord markup of a user, returns nothing if error occurs.
-function formatSummary ( data ) {
+function formatSummary ( data, favoriteMode ) {
 	var formattedMessage;
 	formattedMessage =
 		data.url + "\n" +
 		"```" +
 		"User: "+ data.username + getHighestRating( data.perfs ) + " (" + ( data.online ? "online" : "offline" ) + ")"+"\n"+
 		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
-		"Favorite mode: " + getMostPlayed( data.perfs ) + "\n" +
-        "Time played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
+		"Favorite mode: " + getMostPlayed( data.perfs, favoriteMode ) + "\n" +
+		"Time played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
 		"Win expectancy: " + getWinExpectancy( data ) + "\n" +
 		"```";
 	return formattedMessage;
@@ -269,9 +234,9 @@ function formatGame ( data ) {
         "```";
     return formattedMessage;
 }
-// Get the name, rating and progress of the most played mode
-function getMostPlayed( list ) {
-	var mostPlayed;
+// Get the name, rating and progress of the most played (or favorite) mode
+function getMostPlayed( list, favoriteMode ) {
+    var mostPlayed;
     var modes = modesArray( list );
 
     var mostPlayedMode = modes[0][0];
@@ -281,8 +246,17 @@ function getMostPlayed( list ) {
     var mostPlayedGames = modes[0][1].games;
     for ( var i = 0; i < modes.length; i++ ) {
         // exclude puzzle games, unless it is the only mode played by that user.
-        if ( modes[i][0] != 'puzzle' ) {
-            if ( modes[i][1].games > mostPlayedGames) {
+        if ( modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedGames ) {
+            mostPlayedMode = modes[i][0];
+            mostPlayedRD = modes[i][1].rd;
+            mostPlayedProg = modes[i][1].prog;
+            mostPlayedRating = modes[i][1].rating;
+            mostPlayedGames = modes[i][1].games;
+        }
+    }
+    if ( favoriteMode != '' ) {
+        for ( var i = 0; i < modes.length; i++ ) {
+            if ( modes[i][0] == favoriteMode ) {
                 mostPlayedMode = modes[i][0];
                 mostPlayedRD = modes[i][1].rd;
                 mostPlayedProg = modes[i][1].prog;

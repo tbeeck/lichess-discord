@@ -293,12 +293,14 @@ function getMostPlayed( list ) {
         }
     } 
     if (mostPlayedProg > 0)
-        mostPlayedProg = "+" + mostPlayedProg;
-    else if (mostPlayedProg == 0)
-        mostPlayedProg = "=0";
+        mostPlayedProg = " ▲" + mostPlayedProg;
+    else if (mostPlayedProg < 0)
+        mostPlayedProg = " ▼" + Math.abs( mostPlayedProg );
+    else
+        mostPlayedProg = "";
 
     var formattedMessage = mostPlayedMode + " (" + mostPlayedGames + " games, " +
-        mostPlayedRating + " ± " + ( 2 * mostPlayedRD ) + " " + mostPlayedProg + ")";
+        mostPlayedRating + " ± " + ( 2 * mostPlayedRD ) + mostPlayedProg + ")";
 	return formattedMessage;
 }
 // Get string with highest rating formatted for summary
@@ -320,12 +322,14 @@ function getHighestRating ( list ) {
         }
     }
     if (highestProg > 0)
-        highestProg = "+" + highestProg;
-    else if (highestProg == 0)
-        highestProg = "=0";
+        highestProg = " ▲" + highestProg;
+    else if (highestProg < 0)
+        highestProg = " ▼" + Math.abs( highestProg );
+    else
+        highestProg = "";
 
     var formattedMessage = " (" + highestMode + " " + highestGames + " games, " +
-        highestRating + " ± " + ( 2 * highestRD ) + " " + highestProg + ")";
+        highestRating + " ± " + ( 2 * highestRD ) + highestProg + ")";
 	return formattedMessage;
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves

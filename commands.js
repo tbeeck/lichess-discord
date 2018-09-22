@@ -289,9 +289,10 @@ function getHighestRating ( list ) {
         if (modes[i][0] === "puzzle") continue; // Skip puzzle rating
         console.log(modes[i][1].rating + " vs " + highestRating);
         if ( modes[i][1].rating > highestRating) {
-            highestRating = modes[i][1].rating;
             highestMode = modes[i][0];
             highestRD = modes[i][1].rd;
+            highestRating = modes[i][1].rating;
+            highestGames = modes[i][1].games;
         }
     }
 

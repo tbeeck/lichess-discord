@@ -211,11 +211,14 @@ function formatSummary ( data, favoriteMode ) {
   if (data.profile.country)
     flag = " " + countryFlags.countryCode(data.profile.country).emoji;
 
+  var playerName = data.username;
+  if ( data.title )
+      playerName = data.title + " " + playerName;
   var formattedMessage;
 	formattedMessage =
 		data.url + "\n" +
 		"```prolog\n" +
-		"User: " + data.username + flag + getHighestRating( data.perfs ) + "\n"+
+		"User: " + playerName + flag + getHighestRating( data.perfs ) + "\n"+
 		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
 		"Favorite Mode: " + getMostPlayed( data.perfs, favoriteMode ) + "\n" +
 		"Time Played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +

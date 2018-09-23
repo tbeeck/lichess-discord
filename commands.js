@@ -1,4 +1,4 @@
-
+const Discord = require('discord.js');
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const convertSeconds = require('convert-seconds')
@@ -210,20 +210,24 @@ function formatSummary ( data, favoriteMode ) {
 
   var flag = "";
   if (data.profile.country)
-    flag = " " + countryFlags.countryCode(data.profile.country).emoji;
+    flag = ":flag_" + data.profile.country.toLowerCase() + ": ";
 
   var playerName = data.username;
   if ( data.title )
       playerName = data.title + " " + playerName;
+
   var formattedMessage;
-	formattedMessage =
-		data.url + "\n" +
-		"```prolog\n" +
-		playerName + flag + getHighestRating( data.perfs ) + " " + status + "\n"+
-		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
-		"Time Played: " + formatSeconds( data.playTime.total ) + "\n" +
-		"Win Expectancy: " + getWinExpectancy( data ) + "\n" +
-		"```";
+  formattedMessage = new Discord.RichEmbed()
+    .setAuthor(data.username, null, data.url)
+    .setTitle("Challenge " + data.username + " to a game!")
+    .setURL("https://lichess.org/?user=" + data.username + "#friend")
+    .setColor(0xFFFFFF)
+    .addField("Status", status, true)
+    .addField("Rating", getHighestRating(data.perfs), true)
+    .addField("Time Played", formatSeconds(data.playTime.total), true)
+    .addField("Win Expectancy: ", getWinExpectancy(data), true)
+    .addField("Games: ", data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual", true);
+
 	return formattedMessage;
 }
 // Format game
@@ -313,8 +317,8 @@ function getHighestRating ( list ) {
         }
     }
 
-    var formattedMessage = " (" + highestRating + " ± " +
-      ( 2 * highestRD ) + " " + highestMode + " with " + highestGames + " games)";
+    var formattedMessage = highestRating + " ± " +
+      ( 2 * highestRD ) + " " + highestMode + " with " + highestGames + " games";
 	  return formattedMessage;
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves

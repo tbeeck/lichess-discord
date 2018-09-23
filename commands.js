@@ -1,5 +1,6 @@
 
 const axios = require('axios');
+const countryFlags = require('emoji-flags');
 // Set up UserSchema
 var User = require('./userSchema').User;
 
@@ -204,14 +205,17 @@ function formatSummary ( data, favoriteMode ) {
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
   }
-  console.log(colorEmoji);
-  var status = ( !data.online ? " 🔴Offline" : ( colorEmoji ? colorEmoji + "Playing" : " ✅Online" ) )
-  console.log(status);
+  var status = ( !data.online ? " 🔴Offline" : ( colorEmoji ? colorEmoji + "Playing" : " ✅Online" ) );
+
+  var flag = "";
+  if (data.profile.country)
+    flag = " " + countryFlags.countryCode(data.profile.country).emoji;
+
   var formattedMessage;
 	formattedMessage =
 		data.url + "\n" +
 		"```prolog\n" +
-		"User: " + data.username + getHighestRating( data.perfs ) + "\n"+
+		"User: " + data.username + flag + getHighestRating( data.perfs ) + "\n"+
 		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
 		"Favorite Mode: " + getMostPlayed( data.perfs, favoriteMode ) + "\n" +
 		"Time Played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +

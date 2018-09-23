@@ -168,9 +168,8 @@ function sendSummary ( msg, username, favoriteMode ) {
 			msg.channel.send(formattedMessage);
 		})
 		.catch( ( err ) => {
-			console.log("Error in sendSummary");
-      console.log(err);
-			msg.channel.send("An error occured with that request!");
+			console.log( "Error in sendSummary: " + username + " " + err.response.status + " " + err.response.statusText );
+			msg.channel.send("An error occured with that request! " + err.response.status + " " + err.response.statusText );
 		});
 }
 // Recent command

@@ -1,6 +1,7 @@
 
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
+const secondsConverter = require('seconds-converter')
 // Set up UserSchema
 var User = require('./userSchema').User;
 
@@ -218,7 +219,7 @@ function formatSummary ( data, favoriteMode ) {
 		"User: " + data.username + flag + getHighestRating( data.perfs ) + "\n"+
 		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
 		"Favorite Mode: " + getMostPlayed( data.perfs, favoriteMode ) + "\n" +
-		"Time Played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
+		"Time Played: " + formatSeconds( data.playTime.total ) + "\n" +
 		"Win Expectancy: " + getWinExpectancy( data ) + "\n" +
     "Status: " + status +
 		"```";
@@ -334,8 +335,16 @@ function getWinExpectancy ( list ) {
     var score = list.count.win + ( list.count.draw / 2 );
 	return ( score / list.count.all * 100 ).toFixed(1)+ "%";
 }
-function secondsToHours ( seconds ) {
-    return ( ( seconds / 60 ) / 60 ).toFixed(2);
+function formatSeconds ( seconds ) {
+  var duration = secondsConverter( seconds, "sec" );
+  var message = duration.seconds + " seconds";
+  if ( duration.minutes )
+      message = duration.minutes + " minutes";
+  if ( duration.hours )
+      message = duration.hours + " hours, " + message;
+  if ( duration.days )
+      message = duration.days + " days, " + message;
+  return message;
 }
 
 module.exports = {

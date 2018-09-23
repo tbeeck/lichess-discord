@@ -200,7 +200,14 @@ function formatCurrent ( data ) {
 
 // Returns a summary in discord markup of a user, returns nothing if error occurs.
 function formatSummary ( data, favoriteMode ) {
-	var formattedMessage;
+  var colorEmoji;
+  if (data.playing) {
+    colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
+  }
+  console.log(colorEmoji);
+  var status = ( !data.online ? " 🔴Offline" : ( colorEmoji ? colorEmoji + "Playing" : " ✅Online" ) )
+  console.log(status);
+  var formattedMessage;
 	formattedMessage =
 		data.url + "\n" +
 		"```prolog\n" +
@@ -209,6 +216,7 @@ function formatSummary ( data, favoriteMode ) {
 		"Favorite Mode: " + getMostPlayed( data.perfs, favoriteMode ) + "\n" +
 		"Time Played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
 		"Win Expectancy: " + getWinExpectancy( data ) + "\n" +
+    "Status: " + status +
 		"```";
 	return formattedMessage;
 }
@@ -284,7 +292,7 @@ function getMostPlayed( list, favoriteMode ) {
 // Get string with highest rating formatted for summary
 function getHighestRating ( list ) {
     var modes = modesArray( list );
-    console.log(modes);
+
     var highestMode = modes[0][0];
     var highestRD = modes[0][1].rd;
     var highestRating = modes[0][1].rating;

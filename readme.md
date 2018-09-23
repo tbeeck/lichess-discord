@@ -21,7 +21,7 @@
     Sets your favorite game mode (puzzle for puzzle mode)
 !summary [username]
     A summary of your profile or a given profile
-!recent [rated/unrated]
+!recent [rated/casual]
     share your most recent game
 !playing [user]
     shares your ongoing game

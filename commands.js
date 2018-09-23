@@ -97,16 +97,16 @@ var commands = {
         }
     },
     "recent": {
-        usage: "[rated/unrated]",
+        usage: "[rated/casual]",
         description: "share your most recent game",
         process: ( bot, msg, suffix ) => {
             var rated = "";
-            // test if the user wants a rated, unrated game, or most recent
-            if ( suffix.includes('rated') ) {
-                rated = "true";
-            }
-            else if ( suffix.includes('unrated') || suffix.substring('casual') ) {
+            // test if the user wants a rated, casual game, or most recent
+            if (suffix.includes('casual') || suffix.includes('unrated')) {
                 rated = "false";
+            }
+            else if (suffix.includes('rated')) {
+                rated = "true";
             }
             else {
                 rated = "";
@@ -213,12 +213,11 @@ function formatSummary ( data, favoriteMode ) {
     flag = ":flag_" + data.profile.country.toLowerCase() + ": ";
 
   var playerName = data.username;
-  if ( data.title )
+  if (data.title)
       playerName = data.title + " " + playerName;
 
-  var formattedMessage;
-  formattedMessage = new Discord.RichEmbed()
-    .setAuthor(data.username, null, data.url)
+  var formattedMessage = new Discord.RichEmbed()
+    .setAuthor(playerName, null, data.url)
     .setTitle("Challenge " + data.username + " to a game!")
     .setURL("https://lichess.org/?user=" + data.username + "#friend")
     .setColor(0xFFFFFF)
@@ -226,7 +225,7 @@ function formatSummary ( data, favoriteMode ) {
     .addField("Rating", getHighestRating(data.perfs), true)
     .addField("Time Played", formatSeconds(data.playTime.total), true)
     .addField("Win Expectancy: ", getWinExpectancy(data), true)
-    .addField("Games: ", data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual", true);
+    .addField("Games: ", data.count.rated + " rated, " + (data.count.all - data.count.rated) + " casual", true);
 
 	return formattedMessage;
 }
@@ -257,48 +256,6 @@ function formatGame ( data ) {
         "```";
     return formattedMessage;
 }
-// Get the name, rating and progress of the most played (or favorite) mode
-function getMostPlayed( list, favoriteMode ) {
-    var mostPlayed;
-    var modes = modesArray( list );
-
-    var mostPlayedMode = modes[0][0];
-    var mostPlayedRD = modes[0][1].rd;
-    var mostPlayedProg = modes[0][1].prog;
-    var mostPlayedRating = modes[0][1].rating;
-    var mostPlayedGames = modes[0][1].games;
-    for ( var i = 0; i < modes.length; i++ ) {
-        // exclude puzzle games, unless it is the only mode played by that user.
-        if ( modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedGames ) {
-            mostPlayedMode = modes[i][0];
-            mostPlayedRD = modes[i][1].rd;
-            mostPlayedProg = modes[i][1].prog;
-            mostPlayedRating = modes[i][1].rating;
-            mostPlayedGames = modes[i][1].games;
-        }
-    }
-    if ( favoriteMode != '' ) {
-        for ( var i = 0; i < modes.length; i++ ) {
-            if ( modes[i][0] == favoriteMode ) {
-                mostPlayedMode = modes[i][0];
-                mostPlayedRD = modes[i][1].rd;
-                mostPlayedProg = modes[i][1].prog;
-                mostPlayedRating = modes[i][1].rating;
-                mostPlayedGames = modes[i][1].games;
-            }
-        }
-    }
-    if (mostPlayedProg > 0)
-        mostPlayedProg = " ▲" + mostPlayedProg + "📈";
-    else if (mostPlayedProg < 0)
-        mostPlayedProg = " ▼" + Math.abs( mostPlayedProg ) + "📉";
-    else
-        mostPlayedProg = "";
-
-    var formattedMessage = mostPlayedMode + " (" + mostPlayedGames + " games, " +
-        mostPlayedRating + " ± " + ( 2 * mostPlayedRD ) + mostPlayedProg + ")";
-	return formattedMessage;
-}
 // Get string with highest rating formatted for summary
 function getHighestRating ( list ) {
     var modes = modesArray( list );
@@ -318,7 +275,7 @@ function getHighestRating ( list ) {
     }
 
     var formattedMessage = highestRating + " ± " +
-      ( 2 * highestRD ) + " " + highestMode + " with " + highestGames + " games";
+      ( 2 * highestRD ) + " " + highestMode + " over " + highestGames + " games";
 	  return formattedMessage;
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves

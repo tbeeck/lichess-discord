@@ -204,7 +204,7 @@ function formatSummary ( data, favoriteMode ) {
 	formattedMessage =
 		data.url + "\n" +
 		"```prolog\n" +
-		"User: " + data.username + ( data.online ? " ✅" : " 🔴" ) + getHighestRating( data.perfs ) + "\n"+
+		"User: " + data.username + getHighestRating( data.perfs ) + "\n"+
 		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
 		"Favorite Mode: " + getMostPlayed( data.perfs, favoriteMode ) + "\n" +
 		"Time Played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
@@ -291,7 +291,6 @@ function getHighestRating ( list ) {
     var highestGames = modes[0][1].games;
     for ( var i = 0; i < modes.length; i++ ) {
         if (modes[i][0] === "puzzle") continue; // Skip puzzle rating
-        console.log(modes[i][1].rating + " vs " + highestRating);
         if ( modes[i][1].rating > highestRating) {
             highestMode = modes[i][0];
             highestRD = modes[i][1].rd;

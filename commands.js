@@ -205,7 +205,7 @@ function formatSummary ( data, favoriteMode ) {
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
   }
-  var status = ( !data.online ? " 🔴Offline" : ( colorEmoji ? colorEmoji + "Playing" : " ✅Online" ) );
+  var status = ( !data.online ? "🔴Offline" : ( colorEmoji ? colorEmoji + "Playing" : "✅Online" ) );
 
   var flag = "";
   if (data.profile.country)
@@ -218,12 +218,11 @@ function formatSummary ( data, favoriteMode ) {
 	formattedMessage =
 		data.url + "\n" +
 		"```prolog\n" +
-		"User: " + playerName + flag + getHighestRating( data.perfs ) + "\n"+
+		playerName + flag + getHighestRating( data.perfs ) + " " + status + "\n"+
 		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
 		"Favorite Mode: " + getMostPlayed( data.perfs, favoriteMode ) + "\n" +
 		"Time Played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
-		"Win Expectancy: " + getWinExpectancy( data ) + "\n" +
-    "Status: " + status +
+		"Win Expectancy: " + getWinExpectancy( data ) +
 		"```";
 	return formattedMessage;
 }

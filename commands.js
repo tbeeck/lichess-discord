@@ -215,21 +215,26 @@ function formatSummary ( data, favoriteMode ) {
 // Format game
 function formatGame ( data ) {
     var formattedMessage, playerLine;
-    if ( data.players.white.ratingDiff ) {
-        playerLine =
-            data.players.white.user.name + " (" + data.players.white.rating + " " + data.players.white.ratingDiff + ")" +
-            " vs " + data.players.black.user.name + " (" + data.players.black.rating + " " + data.players.black.ratingDiff + ")" + "\n";
-    }
-    else {
-        playerLine =
-            data.players.white.user.name + " (" + data.players.white.rating + ")" +
-            " vs " + data.players.black.user.name + " (" + data.players.black.rating + ")" + "\n";
+    var whiteRatingDiff = data.players.white.ratingDiff;
+    var blackRatingDiff = data.players.black.ratingDiff;
+    if ( whiteRatingDiff > 0 )
+        whiteRatingDiff = " ▲" + whiteRatingDiff + "📈";
+    else if ( whiteRatingDiff < 0 )
+        whiteRatingDiff = " ▼" + Math.abs( whiteRatingDiff ) + "📉";
+    else
+        whiteRatingDiff = "";
+    if ( blackRatingDiff > 0 )
+        blackRatingDiff = " ▲" + blackRatingDiff + "📈";
+    else if ( blackRatingDiff < 0 )
+        blackRatingDiff = " ▼" + Math.abs( blackRatingDiff ) + "📉";
+    else
+        blackRatingDiff = "";
 
-    }
     formattedMessage =
         "https://lichess.org/" + data.id + "\n" +
-        "```" +
-        playerLine +
+        "```prolog\n" +
+        data.players.white.user.name + " (" + data.players.white.rating + whiteRatingDiff + ")" +
+        " vs " + data.players.black.user.name + " (" + data.players.black.rating + blackRatingDiff + ")\n" +
         "Winner: "+ data.winner + "\n" +
         "```";
     return formattedMessage;

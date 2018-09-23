@@ -1,7 +1,7 @@
 
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const secondsConverter = require('seconds-converter')
+const convertSeconds = require('convert-seconds')
 // Set up UserSchema
 var User = require('./userSchema').User;
 
@@ -336,7 +336,9 @@ function getWinExpectancy ( list ) {
 	return ( score / list.count.all * 100 ).toFixed(1)+ "%";
 }
 function formatSeconds ( seconds ) {
-  var duration = secondsConverter( seconds, "sec" );
+  var duration = convertSeconds( seconds );
+  duration.days = Math.floor(seconds / 60 / 60 / 24);
+  duration.hours = duration.hours % 24;
   var message = duration.seconds + " seconds";
   if ( duration.minutes )
       message = duration.minutes + " minutes";

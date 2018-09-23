@@ -200,15 +200,23 @@ function formatCurrent ( data ) {
 
 // Returns a summary in discord markup of a user, returns nothing if error occurs.
 function formatSummary ( data, favoriteMode ) {
-	var formattedMessage;
+  var colorEmoji;
+  if (data.playing) {
+    colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
+  }
+  console.log(colorEmoji);
+  var status = ( !data.online ? " 🔴Offline" : ( colorEmoji ? colorEmoji + "Playing" : " ✅Online" ) )
+  console.log(status);
+  var formattedMessage;
 	formattedMessage =
 		data.url + "\n" +
 		"```prolog\n" +
-		"User: " + data.username + ( data.online ? " ✅" : " 🔴" ) + getHighestRating( data.perfs ) + "\n"+
+		"User: " + data.username + getHighestRating( data.perfs ) + "\n"+
 		"Games: " + data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual\n"+
 		"Favorite Mode: " + getMostPlayed( data.perfs, favoriteMode ) + "\n" +
 		"Time Played: " + secondsToHours( data.playTime.total ) + " hours" + "\n" +
 		"Win Expectancy: " + getWinExpectancy( data ) + "\n" +
+    "Status: " + status +
 		"```";
 	return formattedMessage;
 }
@@ -284,14 +292,13 @@ function getMostPlayed( list, favoriteMode ) {
 // Get string with highest rating formatted for summary
 function getHighestRating ( list ) {
     var modes = modesArray( list );
-    console.log(modes);
+
     var highestMode = modes[0][0];
     var highestRD = modes[0][1].rd;
     var highestRating = modes[0][1].rating;
     var highestGames = modes[0][1].games;
     for ( var i = 0; i < modes.length; i++ ) {
         if (modes[i][0] === "puzzle") continue; // Skip puzzle rating
-        console.log(modes[i][1].rating + " vs " + highestRating);
         if ( modes[i][1].rating > highestRating) {
             highestMode = modes[i][0];
             highestRD = modes[i][1].rd;

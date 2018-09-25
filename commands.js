@@ -97,16 +97,16 @@ var commands = {
         }
     },
     "recent": {
-        usage: "[rated/unrated]",
+        usage: "[rated/casual]",
         description: "share your most recent game",
         process: ( bot, msg, suffix ) => {
             var rated = "";
-            // test if the user wants a rated, unrated game, or most recent
-            if ( suffix.includes('rated') ) {
-                rated = "true";
-            }
-            else if ( suffix.includes('unrated') || suffix.substring('casual') ) {
+            // test if the user wants a rated, casual game, or most recent
+            if (suffix.includes('casual') || suffix.includes('unrated')) {
                 rated = "false";
+            }
+            else if (suffix.includes('rated')) {
+                rated = "true";
             }
             else {
                 rated = "";
@@ -163,10 +163,10 @@ function sendCurrent ( msg, username ) {
 
 
 // summary command
-function sendSummary ( msg, username, favoriteMode ) {
+function sendSummary ( msg, username ) {
 	axios.get( 'https://lichess.org/api/user/' + username )
 		.then( ( response ) => {
-			var formattedMessage = formatSummary( response.data, favoriteMode );
+			var formattedMessage = formatSummary( response.data );
 			msg.channel.send(formattedMessage);
 		})
 		.catch( ( err ) => {
@@ -201,7 +201,7 @@ function formatCurrent ( data ) {
 }
 
 // Returns a summary in discord markup of a user, returns nothing if error occurs.
-function formatSummary ( data, favoriteMode ) {
+function formatSummary ( data ) {
   var colorEmoji;
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
@@ -213,20 +213,19 @@ function formatSummary ( data, favoriteMode ) {
     flag = ":flag_" + data.profile.country.toLowerCase() + ": ";
 
   var playerName = data.username;
-  if ( data.title )
+  if (data.title)
       playerName = data.title + " " + playerName;
 
-  var formattedMessage;
-  formattedMessage = new Discord.RichEmbed()
-    .setAuthor(data.username, null, data.url)
+  var formattedMessage = new Discord.RichEmbed()
+    .setAuthor(playerName, null, data.url)
     .setTitle("Challenge " + data.username + " to a game!")
     .setURL("https://lichess.org/?user=" + data.username + "#friend")
     .setColor(0xFFFFFF)
     .addField("Status", status, true)
-    .addField("Rating", getHighestRating(data.perfs), true)
+    .addField("Rating", getMostPlayed(data.perfs), true)
     .addField("Time Played", formatSeconds(data.playTime.total), true)
     .addField("Win Expectancy: ", getWinExpectancy(data), true)
-    .addField("Games: ", data.count.rated + " rated, " + ( data.count.all - data.count.rated ) + " casual", true);
+    .addField("Games: ", data.count.rated + " rated, " + (data.count.all - data.count.rated) + " casual", true);
 
 	return formattedMessage;
 }
@@ -257,8 +256,8 @@ function formatGame ( data ) {
         "```";
     return formattedMessage;
 }
-// Get the name, rating and progress of the most played (or favorite) mode
-function getMostPlayed( list, favoriteMode ) {
+// Get string with highest rating formatted for summary
+function getMostPlayed( list ) {
     var mostPlayed;
     var modes = modesArray( list );
 
@@ -277,17 +276,6 @@ function getMostPlayed( list, favoriteMode ) {
             mostPlayedGames = modes[i][1].games;
         }
     }
-    if ( favoriteMode != '' ) {
-        for ( var i = 0; i < modes.length; i++ ) {
-            if ( modes[i][0] == favoriteMode ) {
-                mostPlayedMode = modes[i][0];
-                mostPlayedRD = modes[i][1].rd;
-                mostPlayedProg = modes[i][1].prog;
-                mostPlayedRating = modes[i][1].rating;
-                mostPlayedGames = modes[i][1].games;
-            }
-        }
-    }
     if (mostPlayedProg > 0)
         mostPlayedProg = " ▲" + mostPlayedProg + "📈";
     else if (mostPlayedProg < 0)
@@ -295,31 +283,9 @@ function getMostPlayed( list, favoriteMode ) {
     else
         mostPlayedProg = "";
 
-    var formattedMessage = mostPlayedMode + " (" + mostPlayedGames + " games, " +
-        mostPlayedRating + " ± " + ( 2 * mostPlayedRD ) + mostPlayedProg + ")";
-	return formattedMessage;
-}
-// Get string with highest rating formatted for summary
-function getHighestRating ( list ) {
-    var modes = modesArray( list );
-
-    var highestMode = modes[0][0];
-    var highestRD = modes[0][1].rd;
-    var highestRating = modes[0][1].rating;
-    var highestGames = modes[0][1].games;
-    for ( var i = 0; i < modes.length; i++ ) {
-        if (modes[i][0] === "puzzle") continue; // Skip puzzle rating
-        if ( modes[i][1].rating > highestRating) {
-            highestMode = modes[i][0];
-            highestRD = modes[i][1].rd;
-            highestRating = modes[i][1].rating;
-            highestGames = modes[i][1].games;
-        }
-    }
-
-    var formattedMessage = highestRating + " ± " +
-      ( 2 * highestRD ) + " " + highestMode + " with " + highestGames + " games";
-	  return formattedMessage;
+    var formattedMessage = mostPlayedRating + " ± " + ( 2 * mostPlayedRD ) +
+        mostPlayedProg + " " + mostPlayedMode + " over " + mostPlayedGames + " games";
+    return formattedMessage;
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
 function modesArray ( list ) {

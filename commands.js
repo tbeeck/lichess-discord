@@ -217,15 +217,14 @@ function formatSummary ( data ) {
       playerName = data.title + " " + playerName;
 
   var formattedMessage = new Discord.RichEmbed()
-    .setAuthor(playerName, null, data.url)
+    .setAuthor(playerName + " " + status, null, data.url)
     .setTitle("Challenge " + data.username + " to a game!")
     .setURL("https://lichess.org/?user=" + data.username + "#friend")
     .setColor(0xFFFFFF)
-    .addField("Status", status, true)
+    .addField("Games: ", data.count.rated + " rated, " + (data.count.all - data.count.rated) + " casual", true)
     .addField("Rating", getMostPlayed(data.perfs), true)
     .addField("Time Played", formatSeconds(data.playTime.total), true)
-    .addField("Win Expectancy: ", getWinExpectancy(data), true)
-    .addField("Games: ", data.count.rated + " rated, " + (data.count.all - data.count.rated) + " casual", true);
+    .addField("Win Expectancy: ", getWinExpectancy(data), true);
 
 	return formattedMessage;
 }

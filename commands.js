@@ -119,7 +119,7 @@ var commands = {
                     msg.channel.send("No user found under that name!");
                 }
                 else {
-                    sendGame( msg, result.lichessName, rated );
+                    sendRecentGame( msg, result.lichessName, rated );
                 }
             });
         }
@@ -174,17 +174,17 @@ function sendSummary ( msg, username ) {
 			msg.channel.send("An error occured with that request! " + err.response.status + " " + err.response.statusText );
 		});
 }
-// Recent command
-function sendGame ( msg, username, rated ) {
+// Recent game command
+function sendRecentGame ( msg, username, rated ) {
     // Accept only the x-ndjson type
     axios.get( 'https://lichess.org/games/export/' + username + "?max=1" + "&rated=" + rated,
         { headers: { 'Accept': 'application/x-ndjson' } } )
         .then( ( response ) => {
-            var formattedMessage = formatGame( response.data );
+            var formattedMessage = formatRecentGame( response.data );
             msg.channel.send(formattedMessage);
         })
         .catch( ( err ) => {
-            console.log("error in sendGame");
+            console.log("error in sendRecentGame");
             msg.channel.send("An error occured with that request!");
         });
 }
@@ -229,31 +229,10 @@ function formatSummary ( data ) {
 
 	return formattedMessage;
 }
-// Format game
-function formatGame ( data ) {
-    var formattedMessage, playerLine;
-    var whiteRatingDiff = data.players.white.ratingDiff;
-    var blackRatingDiff = data.players.black.ratingDiff;
-    if ( whiteRatingDiff > 0 )
-        whiteRatingDiff = " ▲" + whiteRatingDiff + "📈";
-    else if ( whiteRatingDiff < 0 )
-        whiteRatingDiff = " ▼" + Math.abs( whiteRatingDiff ) + "📉";
-    else
-        whiteRatingDiff = "";
-    if ( blackRatingDiff > 0 )
-        blackRatingDiff = " ▲" + blackRatingDiff + "📈";
-    else if ( blackRatingDiff < 0 )
-        blackRatingDiff = " ▼" + Math.abs( blackRatingDiff ) + "📉";
-    else
-        blackRatingDiff = "";
-
+// Format recent game
+function formatRecentGame ( data ) {
     formattedMessage =
-        "https://lichess.org/" + data.id + "\n" +
-        "```prolog\n" +
-        data.players.white.user.name + " (" + data.players.white.rating + whiteRatingDiff + ")" +
-        " vs " + data.players.black.user.name + " (" + data.players.black.rating + blackRatingDiff + ")\n" +
-        "Winner: "+ data.winner + "\n" +
-        "```";
+        "https://lichess.org/" + data.id;
     return formattedMessage;
 }
 // Get string with highest rating formatted for summary

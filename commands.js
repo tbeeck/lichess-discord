@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const convertSeconds = require('convert-seconds')
+const plural = require('plural')
 // Set up UserSchema
 var User = require('./userSchema').User;
 
@@ -206,53 +207,62 @@ function formatSummary ( data ) {
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
   }
-  var status = ( !data.online ? "🔴Offline" : ( colorEmoji ? colorEmoji + "Playing" : "✅Online" ) );
+  var status = ( !data.online ? "🔴 Offline" : ( colorEmoji ? colorEmoji + " Playing" : "✅ Online" ) );
 
   var flag = "";
   if (data.profile.country)
-    flag = ":flag_" + data.profile.country.toLowerCase() + ": ";
+    flag = countryFlags.countryCode(data.profile.country).emoji;
 
   var playerName = data.username;
   if (data.title)
       playerName = data.title + " " + playerName;
 
+  var mostPlayedMode = getMostPlayedMode(data.perfs);
   var formattedMessage = new Discord.RichEmbed()
-    .setAuthor(playerName, null, data.url)
+    .setAuthor(flag + " " + playerName + " " + status, null, data.url)
     .setTitle("Challenge " + data.username + " to a game!")
     .setURL("https://lichess.org/?user=" + data.username + "#friend")
     .setColor(0xFFFFFF)
-    .addField("Status", status, true)
-    .addField("Rating", getMostPlayed(data.perfs), true)
+    .addField("Games ", data.count.rated + " rated, " + (data.count.all - data.count.rated) + " casual", true)
+    .addField("Rating (" + toTitleCase ( mostPlayedMode ) + ")", getMostPlayedRating(data.perfs, mostPlayedMode), true)
     .addField("Time Played", formatSeconds(data.playTime.total), true)
-    .addField("Win Expectancy: ", getWinExpectancy(data), true)
-    .addField("Games: ", data.count.rated + " rated, " + (data.count.all - data.count.rated) + " casual", true);
+    .addField("Win Expectancy ", getWinExpectancy(data), true);
 
 	return formattedMessage;
 }
 // Format recent game
 function formatRecentGame ( data ) {
-    formattedMessage =
-        "https://lichess.org/" + data.id;
-    return formattedMessage;
+    return "https://lichess.org/" + data.id;
 }
-// Get string with highest rating formatted for summary
-function getMostPlayed( list ) {
-    var mostPlayed;
+function getMostPlayedMode( list ) {
     var modes = modesArray( list );
 
     var mostPlayedMode = modes[0][0];
+    var mostPlayedGames = modes[0][1].games;
+    for ( var i = 0; i < modes.length; i++ ) {
+        // exclude puzzle games, unless it is the only mode played by that user.
+        if ( modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedGames ) {
+            mostPlayedMode = modes[i][0];
+            mostPlayedGames = modes[i][1].games;
+        }
+    }
+    return mostPlayedMode;
+}
+// Get string with highest rating formatted for summary
+function getMostPlayedRating( list, mostPlayedMode ) {
+    var modes = modesArray( list );
+
     var mostPlayedRD = modes[0][1].rd;
     var mostPlayedProg = modes[0][1].prog;
     var mostPlayedRating = modes[0][1].rating;
     var mostPlayedGames = modes[0][1].games;
     for ( var i = 0; i < modes.length; i++ ) {
         // exclude puzzle games, unless it is the only mode played by that user.
-        if ( modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedGames ) {
-            mostPlayedMode = modes[i][0];
+        if ( modes[i][0] == mostPlayedMode ) {
             mostPlayedRD = modes[i][1].rd;
             mostPlayedProg = modes[i][1].prog;
             mostPlayedRating = modes[i][1].rating;
-            mostPlayedGames = modes[i][1].games;
+            mostPlayedGames = modes[i][1].games + " " + plural((mostPlayedMode == "puzzle" ? "attempt" : " game"), modes[i][1].games);
         }
     }
     if (mostPlayedProg > 0)
@@ -263,7 +273,7 @@ function getMostPlayed( list ) {
         mostPlayedProg = "";
 
     var formattedMessage = mostPlayedRating + " ± " + ( 2 * mostPlayedRD ) +
-        mostPlayedProg + " " + mostPlayedMode + " over " + mostPlayedGames + " games";
+        mostPlayedProg + " over " + mostPlayedGames;
     return formattedMessage;
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
@@ -289,14 +299,19 @@ function formatSeconds ( seconds ) {
   var duration = convertSeconds( seconds );
   duration.days = Math.floor(seconds / 60 / 60 / 24);
   duration.hours = duration.hours % 24;
-  var message = duration.seconds + " seconds";
+  var message = duration.seconds + " " + plural("second", duration.seconds);
   if ( duration.minutes )
-      message = duration.minutes + " minutes";
+      message = duration.minutes + " " + plural("minute", duration.minutes);
   if ( duration.hours )
-      message = duration.hours + " hours, " + message;
+      message = duration.hours + " " + plural("hour", duration.hours) + ", " + message;
   if ( duration.days )
-      message = duration.days + " days, " + message;
+      message = duration.days + " " + plural("day", duration.days) + ", " + message;
   return message;
+}
+function toTitleCase ( str ) {
+    return str.replace(/\w\S*/g, function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
 }
 
 module.exports = {

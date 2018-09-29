@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
 const convertSeconds = require('convert-seconds')
+const plural = require('plural')
 // Set up UserSchema
 var User = require('./userSchema').User;
 
@@ -261,7 +262,7 @@ function getMostPlayedRating( list, mostPlayedMode ) {
             mostPlayedRD = modes[i][1].rd;
             mostPlayedProg = modes[i][1].prog;
             mostPlayedRating = modes[i][1].rating;
-            mostPlayedGames = modes[i][1].games + (mostPlayedMode == "puzzle" ? " attempts" : " games");
+            mostPlayedGames = modes[i][1].games + " " + plural((mostPlayedMode == "puzzle" ? "attempt" : " game"), modes[i][1].games);
         }
     }
     if (mostPlayedProg > 0)
@@ -298,13 +299,13 @@ function formatSeconds ( seconds ) {
   var duration = convertSeconds( seconds );
   duration.days = Math.floor(seconds / 60 / 60 / 24);
   duration.hours = duration.hours % 24;
-  var message = duration.seconds + " seconds";
+  var message = duration.seconds + " " + plural("second", duration.seconds);
   if ( duration.minutes )
-      message = duration.minutes + " minutes";
+      message = duration.minutes + " " + plural("minute", duration.minutes);
   if ( duration.hours )
-      message = duration.hours + " hours, " + message;
+      message = duration.hours + " " + plural("hour", duration.hours) + ", " + message;
   if ( duration.days )
-      message = duration.days + " days, " + message;
+      message = duration.days + " " + plural("day", duration.days) + ", " + message;
   return message;
 }
 function toTitleCase ( str ) {

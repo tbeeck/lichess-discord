@@ -206,18 +206,18 @@ function formatSummary ( data ) {
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
   }
-  var status = ( !data.online ? "🔴Offline" : ( colorEmoji ? colorEmoji + "Playing" : "✅Online" ) );
+  var status = ( !data.online ? "🔴 Offline" : ( colorEmoji ? colorEmoji + " Playing" : "✅ Online" ) );
 
   var flag = "";
   if (data.profile.country)
-    flag = ":flag_" + data.profile.country.toLowerCase() + ": ";
+    flag = countryFlags.countryCode(data.profile.country).emoji;
 
   var playerName = data.username;
   if (data.title)
       playerName = data.title + " " + playerName;
 
   var formattedMessage = new Discord.RichEmbed()
-    .setAuthor(playerName + " " + status, null, data.url)
+    .setAuthor(flag + " " + playerName + " " + status, null, data.url)
     .setTitle("Challenge " + data.username + " to a game!")
     .setURL("https://lichess.org/?user=" + data.username + "#friend")
     .setColor(0xFFFFFF)

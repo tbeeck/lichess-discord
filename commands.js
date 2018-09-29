@@ -207,11 +207,13 @@ function formatSummary ( data ) {
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
   }
-  var status = ( !data.online ? "🔴 Offline" : ( colorEmoji ? colorEmoji + " Playing" : "✅ Online" ) );
+  var status = ( !data.online ? "🔴 Offline" : ( colorEmoji ? colorEmoji + " Playing" : "📶 Online" ) );
+  if ( data.streaming )
+      status = "📡 Streaming  " + status;
 
   var flag = "";
   if (data.profile.country)
-    flag = countryFlags.countryCode(data.profile.country).emoji;
+      flag = countryFlags.countryCode(data.profile.country).emoji;
 
   var playerName = data.username;
   if (data.title)
@@ -219,7 +221,7 @@ function formatSummary ( data ) {
 
   var mostPlayedMode = getMostPlayedMode(data.perfs);
   var formattedMessage = new Discord.RichEmbed()
-    .setAuthor(flag + " " + playerName + " " + status, null, data.url)
+    .setAuthor(flag + " " + playerName + "  " + status, null, data.url)
     .setTitle("Challenge " + data.username + " to a game!")
     .setURL("https://lichess.org/?user=" + data.username + "#friend")
     .setColor(0xFFFFFF)

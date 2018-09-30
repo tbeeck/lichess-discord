@@ -157,8 +157,8 @@ function sendCurrent ( msg, username ) {
         msg.channel.send(formattedMessage);
     })
     .catch( ( err ) => {
-        console.log(err);
-        msg.channel.send("An error occured with that request!");
+		console.log( "Error in sendCurrent: " + username + " " + err.response.status + " " + err.response.statusText );
+		msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
     });
 }
 
@@ -172,7 +172,7 @@ function sendSummary ( msg, username ) {
 		})
 		.catch( ( err ) => {
 			console.log( "Error in sendSummary: " + username + " " + err.response.status + " " + err.response.statusText );
-			msg.channel.send("An error occured with that request! " + err.response.status + " " + err.response.statusText );
+			msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
 		});
 }
 // Recent game command
@@ -185,8 +185,8 @@ function sendRecentGame ( msg, username, rated ) {
             msg.channel.send(formattedMessage);
         })
         .catch( ( err ) => {
-            console.log("error in sendRecentGame");
-            msg.channel.send("An error occured with that request!");
+            console.log("error in sendRecentGame: " + username + " " + rated + " " + err.response.status + " " + err.response.statusText );
+            msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
         });
 }
 // Format playing

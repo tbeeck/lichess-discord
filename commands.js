@@ -157,8 +157,8 @@ function sendCurrent ( msg, username ) {
         msg.channel.send(formattedMessage);
     })
     .catch( ( err ) => {
-        console.log(err);
-        msg.channel.send("An error occured with that request!");
+		console.log( "Error in sendCurrent: " + username + " " + err.response.status + " " + err.response.statusText );
+		msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
     });
 }
 
@@ -172,7 +172,7 @@ function sendSummary ( msg, username ) {
 		})
 		.catch( ( err ) => {
 			console.log( "Error in sendSummary: " + username + " " + err.response.status + " " + err.response.statusText );
-			msg.channel.send("An error occured with that request! " + err.response.status + " " + err.response.statusText );
+			msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
 		});
 }
 // Recent game command
@@ -185,8 +185,8 @@ function sendRecentGame ( msg, username, rated ) {
             msg.channel.send(formattedMessage);
         })
         .catch( ( err ) => {
-            console.log("error in sendRecentGame");
-            msg.channel.send("An error occured with that request!");
+            console.log("error in sendRecentGame: " + username + " " + rated + " " + err.response.status + " " + err.response.statusText );
+            msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
         });
 }
 // Format playing
@@ -207,11 +207,13 @@ function formatSummary ( data ) {
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
   }
-  var status = ( !data.online ? "🔴 Offline" : ( colorEmoji ? colorEmoji + " Playing" : "✅ Online" ) );
+  var status = ( !data.online ? "🔴 Offline" : ( colorEmoji ? colorEmoji + " Playing" : "📶 Online" ) );
+  if ( data.streaming )
+      status = "📡 Streaming  " + status;
 
   var flag = "";
   if (data.profile.country)
-    flag = countryFlags.countryCode(data.profile.country).emoji;
+      flag = countryFlags.countryCode(data.profile.country).emoji;
 
   var playerName = data.username;
   if (data.title)
@@ -219,7 +221,7 @@ function formatSummary ( data ) {
 
   var mostPlayedMode = getMostPlayedMode(data.perfs);
   var formattedMessage = new Discord.RichEmbed()
-    .setAuthor(flag + " " + playerName + " " + status, null, data.url)
+    .setAuthor(flag + " " + playerName + "  " + status, null, data.url)
     .setTitle("Challenge " + data.username + " to a game!")
     .setURL("https://lichess.org/?user=" + data.username + "#friend")
     .setColor(0xFFFFFF)

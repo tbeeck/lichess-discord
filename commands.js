@@ -212,7 +212,7 @@ function formatSummary ( data ) {
       status = "📡 Streaming  " + status;
 
   var flag = "";
-  if (data.profile.country)
+  if (data.profile && data.profile.country)
       flag = countryFlags.countryCode(data.profile.country).emoji;
 
   var playerName = data.username;

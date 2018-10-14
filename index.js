@@ -26,35 +26,40 @@ bot.on("guildCreate", (guild) => {
 
 
 bot.on("message", ( msg ) => {
-    if( ( msg.author.id != bot.user.id ) && ( msg.content[0] === config.prefix ) ) {
+    //drop our own messages to prevent feedback loops
+    if ( msg.author.id == bot.user.id ) {
+        return;
+    }
+    //start special commands
+    if ( ( msg.content[0] === config.prefix ) ) {
       console.log( "treating " + msg.content + " from " + msg.author + "(" + msg.author.username +") as command" );
       var cmdTxt = msg.content.split(" ")[ 0 ].substring( 1 );
       var suffix = msg.content.substring( cmdTxt.length + 2 );
     }
-    var cmd = commands[ cmdTxt ];
-    //start special commands
     if ( cmdTxt === "help" ) {
         var helpText = "";
-        for( var cmd in commands ) {
+        for ( var cmd in commands ) {
                 var info = config.prefix + cmd;
                 var usage = commands[ cmd ].usage;
-                if( usage ) {
+                if ( usage ) {
                     info += " " + usage;
                 }
                 var description = commands[ cmd ].description;
-                if(description){
+                if ( description ) {
                     info += "\n\t" + description;
                 }
                 helpText += "```" + info + "```";
         }
         msg.author.send("Available Commands:" + helpText);
+        return;
     }
     else if ( cmdTxt === "stop" && msg.author.id == "76180331211796480" ) {
         bot.logout();
         process.exit();
     }
     //end special commands, handle normal commands
-    else if ( cmd ) {
+    var cmd = commands[ cmdTxt ];
+    if ( cmd ) {
         try {
             cmd.process( bot, msg, suffix );
         } 
@@ -68,13 +73,6 @@ bot.on("message", ( msg ) => {
     else if ( config.respondToInvalid ) {
         bot.sendMessage( msg.channel, "Invalid command " + cmdTxt );
     } 
-    else {
-    //message isn't a command or is from us
-    //drop our own messages to prevent feedback loops
-        if ( msg.author == bot.user ) {
-            return;
-        }
-    }
 });
 
 // Catch Errors before they crash the app.

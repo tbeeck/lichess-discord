@@ -148,7 +148,32 @@ var commands = {
             }
         }
     },
+    "arena": {
+    	usage: "[user]",
+    	description: "Find an upcoming scheduled arena (or created by a user)",
+    	process: ( bot, msg, suffix ) => {
+            if ( suffix ) {
+                sendArena( msg, suffix );
+            } else {
+                sendArena( msg, "lichess" );
+            }
+    	}
+    },
 }
+
+// Send ongoin game info
+function sendArena ( msg, suffix ) {
+    axios.get( 'https://lichess.org/api/tournament' )
+    .then( ( response ) => {
+        var formattedMessage = formatArena( response.data, suffix );
+        msg.channel.send(formattedMessage);
+    })
+    .catch( ( err ) => {
+		console.log( "Error in sendArena: " + suffix + " " + err.response.status + " " + err.response.statusText );
+		msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
+    });
+}
+
 // Send ongoin game info
 function sendCurrent ( msg, username ) {
     axios.get( 'https://lichess.org/api/user/' + username )
@@ -161,7 +186,6 @@ function sendCurrent ( msg, username ) {
 		msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
     });
 }
-
 
 // summary command
 function sendSummary ( msg, username ) {
@@ -189,6 +213,17 @@ function sendRecentGame ( msg, username, rated ) {
             msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
         });
 }
+
+// Format arena
+function formatArena ( data, createdBy ) {
+    var created = data["created"];
+    for ( var i = 0; i < created.length; i++ ) {
+        if ( createdBy == created[i].createdBy )
+            return "https://lichess.org/tournament/" + created[i].id;
+    }
+    return "No tournament created by " + createdBy + " found!";
+}
+
 // Format playing
 function formatCurrent ( data ) {
     var formattedMessage;
@@ -236,6 +271,7 @@ function formatSummary ( data ) {
 function formatRecentGame ( data ) {
     return "https://lichess.org/" + data.id;
 }
+
 function getMostPlayedMode( list ) {
     var modes = modesArray( list );
 

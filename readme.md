@@ -24,6 +24,6 @@
 !playing [user]
     shares your ongoing game
 !arena [user]
-    Find an upcoming scheduled arena (or created by a user)
+    Find an upcoming or recent arena
 
 ```

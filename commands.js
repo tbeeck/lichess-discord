@@ -150,7 +150,7 @@ var commands = {
     },
     "arena": {
     	usage: "[user]",
-    	description: "Find an upcoming scheduled arena (or created by a user)",
+    	description: "Find an upcoming or recent arena",
     	process: ( bot, msg, suffix ) => {
             if ( suffix ) {
                 sendArena( msg, suffix );
@@ -216,10 +216,12 @@ function sendRecentGame ( msg, username, rated ) {
 
 // Format arena
 function formatArena ( data, createdBy ) {
-    var created = data["created"];
-    for ( var i = 0; i < created.length; i++ ) {
-        if ( createdBy == created[i].createdBy )
-            return "https://lichess.org/tournament/" + created[i].id;
+    for ( var status in data ) {
+        var arenas = data[status];
+        for ( var i = 0; i < arenas.length; i++ ) {
+            if ( createdBy == arenas[i].createdBy )
+                return "https://lichess.org/tournament/" + arenas[i].id;
+        }
     }
     return "No tournament created by " + createdBy + " found!";
 }

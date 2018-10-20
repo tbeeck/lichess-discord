@@ -26,8 +26,8 @@ bot.on("guildCreate", (guild) => {
 
 
 bot.on("message", ( msg ) => {
-    //drop our own messages to prevent feedback loops
-    if ( msg.author.id == bot.user.id ) {
+    //drop bot messages (including our own) to prevent feedback loops
+    if ( msg.author.bot ) {
         return;
     }
     //start special commands

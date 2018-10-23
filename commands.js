@@ -58,7 +58,7 @@ var commands = {
     	description: "set your favorite game mode (puzzle for puzzle mode)",
     	process: ( bot, msg, suffix ) => {
     		var authorId = msg.author.id;
-    		var mode = suffix;
+    		var mode = suffix.toLowerCase();
     		User.findOne( { userId: authorId }, ( err, result ) => {
     			if ( err ) {
     				console.log( err );
@@ -149,23 +149,30 @@ var commands = {
         }
     },
     "arena": {
-    	usage: "[user]",
-    	description: "Find an upcoming or recent arena",
-    	process: ( bot, msg, suffix ) => {
-            if ( suffix ) {
-                sendArena( msg, suffix );
-            } else {
-                sendArena( msg, "lichess" );
-            }
-    	}
-    },
+        usage: "[user]",
+        description: "Find an upcoming or recent arena",
+        process: ( bot, msg, suffix ) => {
+            User.findOne( { userId: msg.author.id }, ( err, result ) => {
+                var favoriteMode = "";
+                if ( err ) {
+                    console.log( err );
+                }
+                favoriteMode = result.favoriteMode;
+                if ( suffix ) {
+                    sendArena( msg, suffix, favoriteMode );
+                } else {
+                    sendArena( msg, "lichess", favoriteMode );
+                }
+            });
+        }
+    }
 }
 
 // Send ongoin game info
-function sendArena ( msg, suffix ) {
+function sendArena ( msg, suffix, favoriteMode ) {
     axios.get( 'https://lichess.org/api/tournament' )
     .then( ( response ) => {
-        var formattedMessage = formatArena( response.data, suffix );
+        var formattedMessage = formatArena( response.data, suffix, favoriteMode );
         msg.channel.send(formattedMessage);
     })
     .catch( ( err ) => {
@@ -188,10 +195,10 @@ function sendCurrent ( msg, username ) {
 }
 
 // summary command
-function sendSummary ( msg, username ) {
+function sendSummary ( msg, username, favoriteMode ) {
 	axios.get( 'https://lichess.org/api/user/' + username )
 		.then( ( response ) => {
-			var formattedMessage = formatSummary( response.data );
+			var formattedMessage = formatSummary( response.data, favoriteMode );
 			msg.channel.send(formattedMessage);
 		})
 		.catch( ( err ) => {
@@ -215,11 +222,18 @@ function sendRecentGame ( msg, username, rated ) {
 }
 
 // Format arena
-function formatArena ( data, createdBy ) {
+function formatArena ( data, createdBy, favoriteMode ) {
     for ( var status in data ) {
         var arenas = data[status];
         for ( var i = 0; i < arenas.length; i++ ) {
-            if ( createdBy == arenas[i].createdBy )
+            if ( arenas[i].variant.key.toLowerCase() == favoriteMode && arenas[i].createdBy == createdBy )
+                return "https://lichess.org/tournament/" + arenas[i].id;
+        }
+    }
+    for ( var status in data ) {
+        var arenas = data[status];
+        for ( var i = 0; i < arenas.length; i++ ) {
+            if ( arenas[i].createdBy == createdBy )
                 return "https://lichess.org/tournament/" + arenas[i].id;
         }
     }
@@ -239,7 +253,7 @@ function formatCurrent ( data ) {
 }
 
 // Returns a summary in discord markup of a user, returns nothing if error occurs.
-function formatSummary ( data ) {
+function formatSummary ( data, favoriteMode ) {
   var colorEmoji;
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
@@ -256,7 +270,7 @@ function formatSummary ( data ) {
   if (data.title)
       playerName = data.title + " " + playerName;
 
-  var mostPlayedMode = getMostPlayedMode(data.perfs);
+  var mostPlayedMode = getMostPlayedMode(data.perfs, favoriteMode);
   var formattedMessage = new Discord.RichEmbed()
     .setAuthor(flag + " " + playerName + "  " + status, null, data.url)
     .setTitle("Challenge " + data.username + " to a game!")
@@ -274,7 +288,7 @@ function formatRecentGame ( data ) {
     return "https://lichess.org/" + data.id;
 }
 
-function getMostPlayedMode( list ) {
+function getMostPlayedMode( list, favoriteMode ) {
     var modes = modesArray( list );
 
     var mostPlayedMode = modes[0][0];
@@ -282,6 +296,12 @@ function getMostPlayedMode( list ) {
     for ( var i = 0; i < modes.length; i++ ) {
         // exclude puzzle games, unless it is the only mode played by that user.
         if ( modes[i][0] != 'puzzle' && modes[i][1].games > mostPlayedGames ) {
+            mostPlayedMode = modes[i][0];
+            mostPlayedGames = modes[i][1].games;
+        }
+    }
+    for ( var i = 0; i < modes.length; i++ ) {
+        if ( modes[i][0].toLowerCase() == favoriteMode ) {
             mostPlayedMode = modes[i][0];
             mostPlayedGames = modes[i][1].games;
         }

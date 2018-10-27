@@ -9,7 +9,7 @@ var User = require('./userSchema').User;
 var commands = {
     "setuser": {
     	usage: "<lichess name>",
-    	description: "set your lichess username",
+    	description: "Sets your lichess username",
     	process: ( bot, msg, suffix ) => {
     		var authorId = msg.author.id;
     		var username = suffix;
@@ -38,7 +38,7 @@ var commands = {
     },
     "whoami": {
         usage: "",
-        description: "Returns your current lichess username",
+        description: "Returns your lichess username",
         process: ( bot, msg ) => {
           User.findOne( { userId: msg.author.id }, ( err, result ) => {
     				if ( err ) {
@@ -54,8 +54,8 @@ var commands = {
         }
     },
     "setgamemode": {
-    	usage: "<game mode>",
-    	description: "set your favorite game mode (puzzle for puzzle mode)",
+    	usage: "[game mode]",
+    	description: "Sets your favorite game (or puzzle) mode",
     	process: ( bot, msg, suffix ) => {
     		var authorId = msg.author.id;
     		var mode = suffix.toLowerCase();
@@ -77,7 +77,7 @@ var commands = {
     },
     "summary": {
         usage: "[username]",
-        description: "A summary of your profile or a given profile",
+        description: "Displays a summary of your profile or a given profile",
         process: ( bot, msg, suffix ) => {
         	if ( suffix ) {
         		sendSummary( msg, suffix, '' );
@@ -99,7 +99,7 @@ var commands = {
     },
     "recent": {
         usage: "[rated/casual]",
-        description: "share your most recent game",
+        description: "Shares your most recent game",
         process: ( bot, msg, suffix ) => {
             var rated = "";
             // test if the user wants a rated, casual game, or most recent
@@ -127,7 +127,7 @@ var commands = {
     },
     "playing": {
         usage: "[user]",
-        description: "shares your ongoing game",
+        description: "Shares your (or a user's) ongoing game",
         process: ( bot, msg, suffix ) => {
             if ( suffix ) {
                 sendCurrent( msg, suffix );
@@ -150,7 +150,7 @@ var commands = {
     },
     "arena": {
         usage: "[user]",
-        description: "Find an upcoming or recent arena",
+        description: "Find an upcoming or recent arena created by lichess (or a user)",
         process: ( bot, msg, suffix ) => {
             User.findOne( { userId: msg.author.id }, ( err, result ) => {
                 var favoriteMode = "";

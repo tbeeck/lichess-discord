@@ -12,6 +12,9 @@ var UserSchema = new mongoose.Schema({
   dateAdded: {
     type: Date,
     default: Date.now
+  },
+  favoriteMode: {
+    type: String
   }
 });
 

@@ -11,6 +11,10 @@ const bot = new Discord.Client({
     disableEveryone: true,
     disabledEvents: ['TYPING_START']
 });
+if (config.discordbotstoken) {
+    const DBLAPI = require('dblapi.js');
+    const discordbots = new DBLAPI(config.discordbotstoken, bot);
+}
 
 // Set up commands
 const commands = require('./commands').commands;

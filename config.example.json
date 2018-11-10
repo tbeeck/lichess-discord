@@ -1,5 +1,6 @@
 {
-    "token":"[bottoken]",
+    "token": "[bottoken]",
+    "discordbotstoken": "[discordbotstoken]",
     "owner": "[ownerid]",
     "prefix": "[choose a prefix]",
     "mongourl": "[mongodb url]",

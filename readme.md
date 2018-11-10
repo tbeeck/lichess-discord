@@ -1,4 +1,5 @@
 # lichess discord bot
+[![Discord Bots](https://discordbots.org/api/widget/status/490949867657494530.svg)](https://discordbots.org/bot/490949867657494530)
 
 # Setup
 

@@ -11,6 +11,16 @@ const bot = new Discord.Client({
     disableEveryone: true,
     disabledEvents: ['TYPING_START']
 });
+if (config.discordbotstoken) {
+    const express = require('express');
+    const http = require('http');
+    const server = http.createServer(express());
+    server.listen(config.discordbotswebhookport, () => {
+        console.log('Listening');
+    });
+    const DBL = require('dblapi.js');
+    const dbl = new DBL(config.discordbotstoken, {webhookPort: config.discordbotswebhookport, webhookServer: server}, bot);
+}
 
 // Set up commands
 const commands = require('./commands').commands;
@@ -32,7 +42,6 @@ bot.on("message", ( msg ) => {
     }
     //start special commands
     if ( ( msg.content[0] === config.prefix ) ) {
-      console.log( "treating " + msg.content + " from " + msg.author + "(" + msg.author.username +") as command" );
       var cmdTxt = msg.content.split(" ")[ 0 ].substring( 1 );
       var suffix = msg.content.substring( cmdTxt.length + 2 );
     }
@@ -60,6 +69,7 @@ bot.on("message", ( msg ) => {
     //end special commands, handle normal commands
     var cmd = commands[ cmdTxt ];
     if ( cmd ) {
+        console.log( "treating " + msg.content + " from " + msg.author + "(" + msg.author.username +") as command" );
         try {
             cmd.process( bot, msg, suffix );
         } 

@@ -12,8 +12,14 @@ const bot = new Discord.Client({
     disabledEvents: ['TYPING_START']
 });
 if (config.discordbotstoken) {
-    const DBLAPI = require('dblapi.js');
-    const discordbots = new DBLAPI(config.discordbotstoken, bot);
+    const express = require('express');
+    const http = require('http');
+    const server = http.createServer(express());
+    server.listen(config.discordbotswebhookport, () => {
+        console.log('Listening');
+    });
+    const DBL = require('dblapi.js');
+    const dbl = new DBL(config.discordbotstoken, {webhookPort: config.discordbotswebhookport, webhookServer: server}, bot);
 }
 
 // Set up commands

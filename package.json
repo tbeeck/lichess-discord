@@ -20,6 +20,7 @@
     "dblapi.js": "^2.3.0",
     "discord.js": "^11.4.2",
     "emoji-flags": "^1.2.0",
+    "express": "^4.16.4",
     "mongoose": "^5.3.11",
     "plural": "^1.1.0"
   },

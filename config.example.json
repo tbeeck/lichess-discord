@@ -1,6 +1,7 @@
 {
     "token": "[bottoken]",
     "discordbotstoken": "[discordbotstoken]",
+    "discordbotswebhookport": 5000,
     "owner": "[ownerid]",
     "prefix": "[choose a prefix]",
     "mongourl": "[mongodb url]",

@@ -42,7 +42,6 @@ bot.on("message", ( msg ) => {
     }
     //start special commands
     if ( ( msg.content[0] === config.prefix ) ) {
-      console.log( "treating " + msg.content + " from " + msg.author + "(" + msg.author.username +") as command" );
       var cmdTxt = msg.content.split(" ")[ 0 ].substring( 1 );
       var suffix = msg.content.substring( cmdTxt.length + 2 );
     }
@@ -70,6 +69,7 @@ bot.on("message", ( msg ) => {
     //end special commands, handle normal commands
     var cmd = commands[ cmdTxt ];
     if ( cmd ) {
+        console.log( "treating " + msg.content + " from " + msg.author + "(" + msg.author.username +") as command" );
         try {
             cmd.process( bot, msg, suffix );
         } 

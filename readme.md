@@ -20,8 +20,8 @@
     Returns your current lichess username
 !setgamemode [game mode]
     Sets your favorite game (or puzzle) mode
-!summary [username]
-    Displays a summary of your profile or a given profile
+!profile [username]
+    Displays your (or a user's) profile
 !recent [rated/casual]
     Shares your most recent game
 !playing [username]

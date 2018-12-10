@@ -75,12 +75,12 @@ var commands = {
     		});
     	}
     },
-    "summary": {
+    "profile": {
         usage: "[username]",
-        description: "Displays a summary of your profile or a given profile",
+        description: "Displays your (or a user's) profile",
         process: ( bot, msg, suffix ) => {
         	if ( suffix ) {
-        		sendSummary( msg, suffix, '' );
+        		sendProfile( msg, suffix, '' );
         	}
         	else {
         		User.findOne( { userId: msg.author.id }, ( err, result ) => {
@@ -91,7 +91,7 @@ var commands = {
     						msg.channel.send("You need to set your lichess username with setuser!");
     					}
     					else {
-    						sendSummary( msg, result.lichessName, result.favoriteMode );
+    						sendProfile( msg, result.lichessName, result.favoriteMode );
     					}
     			});
         	}
@@ -194,15 +194,15 @@ function sendCurrent ( msg, username ) {
     });
 }
 
-// summary command
-function sendSummary ( msg, username, favoriteMode ) {
+// profile command
+function sendProfile ( msg, username, favoriteMode ) {
 	axios.get( 'https://lichess.org/api/user/' + username )
 		.then( ( response ) => {
-			var formattedMessage = formatSummary( response.data, favoriteMode );
+			var formattedMessage = formatProfile( response.data, favoriteMode );
 			msg.channel.send(formattedMessage);
 		})
 		.catch( ( err ) => {
-			console.log( "Error in sendSummary: " + username + " " + err.response.status + " " + err.response.statusText );
+			console.log( "Error in sendProfile: " + username + " " + err.response.status + " " + err.response.statusText );
 			msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
 		});
 }
@@ -252,8 +252,8 @@ function formatCurrent ( data ) {
     return formattedMessage;
 }
 
-// Returns a summary in discord markup of a user, returns nothing if error occurs.
-function formatSummary ( data, favoriteMode ) {
+// Returns a profile in discord markup of a user, returns nothing if error occurs.
+function formatProfile ( data, favoriteMode ) {
   var colorEmoji;
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
@@ -308,7 +308,7 @@ function getMostPlayedMode( list, favoriteMode ) {
     }
     return mostPlayedMode;
 }
-// Get string with highest rating formatted for summary
+// Get string with highest rating formatted for profile
 function getMostPlayedRating( list, mostPlayedMode ) {
     var modes = modesArray( list );
 

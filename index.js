@@ -67,20 +67,22 @@ bot.on("message", ( msg ) => {
         process.exit();
     }
     //end special commands, handle normal commands
-    var cmd = commands[ cmdTxt ];
-    if ( cmd ) {
-        console.log( "treating " + msg.content + " from " + msg.author + "(" + msg.author.username +") as command" );
-        try {
-            cmd.process( bot, msg, suffix );
-        } 
-        catch ( e ) {
-            console.log("command failed:\n" + e.stack)
-            if ( config.debug ) {
-                msg.channel.send("command " + cmdTxt + " failed :(\n" + e.stack );
+    for ( var cmd in commands ) {
+        if ( cmd === cmdTxt ) {
+            console.log( "treating " + msg.content + " from " + msg.author + "(" + msg.author.username +") as command" );
+            try {
+                commands[cmd].process( bot, msg, suffix );
             }
+            catch ( e ) {
+                console.log("command failed:\n" + e.stack)
+                if ( config.debug ) {
+                    msg.channel.send("command " + cmdTxt + " failed :(\n" + e.stack );
+                }
+            }
+            return;
         }
-    } 
-    else if ( config.respondToInvalid ) {
+    }
+    if ( config.respondToInvalid ) {
         bot.sendMessage( msg.channel, "Invalid command " + cmdTxt );
     } 
 });

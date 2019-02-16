@@ -26,6 +26,8 @@
     Shares your most recent game
 !playing [username]
     Shares your (or a user's) ongoing game
+!tv [game mode]
+    Shares the featured game
 !arena [username]
     Find an upcoming or recent arena created by lichess (or a user)
 

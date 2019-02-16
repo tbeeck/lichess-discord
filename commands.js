@@ -148,6 +148,28 @@ var commands = {
             }
         }
     },
+    "tv": {
+        usage: "[game mode]",
+        description: "Shares the featured game",
+        process: ( bot, msg, suffix ) => {
+            if ( suffix ) {
+                sendTv( msg, suffix );
+            }
+            else {
+                User.findOne( { userId: msg.author.id }, ( err, result ) => {
+                    if ( err ) {
+                        console.log( err );
+                    }
+                    if ( !result ) {
+                        msg.channel.send("You need to set your lichess username with setuser!");
+                    }
+                    else {
+                        sendTv( msg, result.favoriteMode );
+                    }
+                });
+            }
+        }
+    },
     "arena": {
         usage: "[user]",
         description: "Find an upcoming or recent arena created by lichess (or a user)",
@@ -168,7 +190,7 @@ var commands = {
     }
 }
 
-// Send ongoin game info
+// Send ongoing game info
 function sendArena ( msg, suffix, favoriteMode ) {
     axios.get( 'https://lichess.org/api/tournament' )
     .then( ( response ) => {
@@ -219,6 +241,19 @@ function sendRecentGame ( msg, username, rated ) {
             console.log("error in sendRecentGame: " + username + " " + rated + " " + err.response.status + " " + err.response.statusText );
             msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
         });
+}
+
+// Send ongoing game info
+function sendTv ( msg, favoriteMode ) {
+    axios.get( 'https://lichess.org/tv/channels' )
+    .then( ( response ) => {
+        var formattedMessage = formatTv( response.data, favoriteMode );
+        msg.channel.send(formattedMessage);
+    })
+    .catch( ( err ) => {
+		console.log( "Error in sendTv: " + favoriteMode + " " + err.response.status + " " + err.response.statusText );
+		msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
+    });
 }
 
 // Format arena
@@ -286,6 +321,15 @@ function formatProfile ( data, favoriteMode ) {
 // Format recent game
 function formatRecentGame ( data ) {
     return "https://lichess.org/" + data.id;
+}
+
+// Format TV
+function formatTv ( data, favoriteMode ) {
+    for ( var channel in data ) {
+        if ( channel.toLowerCase() == favoriteMode )
+            return "https://lichess.org/" + data[channel].gameId;
+    }
+    return "No channel of mode " + favoriteMode + " found!";
 }
 
 function getMostPlayedMode( list, favoriteMode ) {

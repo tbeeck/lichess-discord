@@ -289,6 +289,9 @@ function formatCurrent ( data ) {
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
 function formatProfile ( data, favoriteMode ) {
+  if (data.closed)
+      return "This account is closed.";
+
   var colorEmoji;
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";

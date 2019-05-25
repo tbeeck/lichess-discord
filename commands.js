@@ -23,13 +23,13 @@ var commands = {
     				});
     			}
     			else {
-    				if ( ( new Date() - result.dateAdded ) < ( 60 * 60 * 1000 ) ) { // 1 hour
-    					msg.channel.send("You may update your name once per hour. Try again later.");
+    				if ( ( new Date() - result.dateAdded ) < ( 60 * 1000 ) ) { // 1 minute
+    					msg.channel.send("You may update your name once per minute. Try again later.");
     				}
     				else {
     					var newValues = { $set: { lichessName: username, dateAdded: new Date() } };
     					User.updateOne({ userId: authorId }, newValues, ( err, updateResult ) => {
-    						msg.channel.send("User updated! " + msg.author.username + " is now lichess user " + username);
+    						msg.channel.send("User updated! " + msg.author.username + " = " + username);
     					});
     				}
     			}

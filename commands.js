@@ -23,13 +23,13 @@ var commands = {
     				});
     			}
     			else {
-    				if ( ( new Date() - result.dateAdded ) < ( 60 * 60 * 1000 ) ) { // 1 hour
-    					msg.channel.send("You may update your name once per hour. Try again later.");
+    				if ( ( new Date() - result.dateAdded ) < ( 60 * 1000 ) ) { // 1 minute
+    					msg.channel.send("You may update your name once per minute. Try again later.");
     				}
     				else {
     					var newValues = { $set: { lichessName: username, dateAdded: new Date() } };
     					User.updateOne({ userId: authorId }, newValues, ( err, updateResult ) => {
-    						msg.channel.send("User updated! " + msg.author.username + " is now lichess user " + username);
+    						msg.channel.send("User updated! " + msg.author.username + " = " + username);
     					});
     				}
     			}
@@ -75,12 +75,12 @@ var commands = {
     		});
     	}
     },
-    "summary": {
+    "profile": {
         usage: "[username]",
-        description: "Displays a summary of your profile or a given profile",
+        description: "Displays your (or a user's) profile",
         process: ( bot, msg, suffix ) => {
         	if ( suffix ) {
-        		sendSummary( msg, suffix, '' );
+        		sendProfile( msg, suffix, '' );
         	}
         	else {
         		User.findOne( { userId: msg.author.id }, ( err, result ) => {
@@ -91,7 +91,7 @@ var commands = {
     						msg.channel.send("You need to set your lichess username with setuser!");
     					}
     					else {
-    						sendSummary( msg, result.lichessName, result.favoriteMode );
+    						sendProfile( msg, result.lichessName, result.favoriteMode );
     					}
     			});
         	}
@@ -148,6 +148,28 @@ var commands = {
             }
         }
     },
+    "tv": {
+        usage: "[game mode]",
+        description: "Shares the featured game",
+        process: ( bot, msg, suffix ) => {
+            if ( suffix ) {
+                sendTv( msg, suffix );
+            }
+            else {
+                User.findOne( { userId: msg.author.id }, ( err, result ) => {
+                    if ( err ) {
+                        console.log( err );
+                    }
+                    if ( !result ) {
+                        msg.channel.send("You need to set your lichess username with setuser!");
+                    }
+                    else {
+                        sendTv( msg, result.favoriteMode );
+                    }
+                });
+            }
+        }
+    },
     "arena": {
         usage: "[user]",
         description: "Find an upcoming or recent arena created by lichess (or a user)",
@@ -168,7 +190,7 @@ var commands = {
     }
 }
 
-// Send ongoin game info
+// Send ongoing game info
 function sendArena ( msg, suffix, favoriteMode ) {
     axios.get( 'https://lichess.org/api/tournament' )
     .then( ( response ) => {
@@ -194,15 +216,15 @@ function sendCurrent ( msg, username ) {
     });
 }
 
-// summary command
-function sendSummary ( msg, username, favoriteMode ) {
+// profile command
+function sendProfile ( msg, username, favoriteMode ) {
 	axios.get( 'https://lichess.org/api/user/' + username )
 		.then( ( response ) => {
-			var formattedMessage = formatSummary( response.data, favoriteMode );
+			var formattedMessage = formatProfile( response.data, favoriteMode );
 			msg.channel.send(formattedMessage);
 		})
 		.catch( ( err ) => {
-			console.log( "Error in sendSummary: " + username + " " + err.response.status + " " + err.response.statusText );
+			console.log( "Error in sendProfile: " + username + " " + err.response.status + " " + err.response.statusText );
 			msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
 		});
 }
@@ -219,6 +241,19 @@ function sendRecentGame ( msg, username, rated ) {
             console.log("error in sendRecentGame: " + username + " " + rated + " " + err.response.status + " " + err.response.statusText );
             msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
         });
+}
+
+// Send ongoing game info
+function sendTv ( msg, favoriteMode ) {
+    axios.get( 'https://lichess.org/tv/channels' )
+    .then( ( response ) => {
+        var formattedMessage = formatTv( response.data, favoriteMode );
+        msg.channel.send(formattedMessage);
+    })
+    .catch( ( err ) => {
+		console.log( "Error in sendTv: " + favoriteMode + " " + err.response.status + " " + err.response.statusText );
+		msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
+    });
 }
 
 // Format arena
@@ -252,8 +287,11 @@ function formatCurrent ( data ) {
     return formattedMessage;
 }
 
-// Returns a summary in discord markup of a user, returns nothing if error occurs.
-function formatSummary ( data, favoriteMode ) {
+// Returns a profile in discord markup of a user, returns nothing if error occurs.
+function formatProfile ( data, favoriteMode ) {
+  if (data.closed)
+      return "This account is closed.";
+
   var colorEmoji;
   if (data.playing) {
     colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
@@ -288,6 +326,15 @@ function formatRecentGame ( data ) {
     return "https://lichess.org/" + data.id;
 }
 
+// Format TV
+function formatTv ( data, favoriteMode ) {
+    for ( var channel in data ) {
+        if ( channel.toLowerCase() == favoriteMode )
+            return "https://lichess.org/" + data[channel].gameId;
+    }
+    return "No channel of mode " + favoriteMode + " found!";
+}
+
 function getMostPlayedMode( list, favoriteMode ) {
     var modes = modesArray( list );
 
@@ -308,7 +355,7 @@ function getMostPlayedMode( list, favoriteMode ) {
     }
     return mostPlayedMode;
 }
-// Get string with highest rating formatted for summary
+// Get string with highest rating formatted for profile
 function getMostPlayedRating( list, mostPlayedMode ) {
     var modes = modesArray( list );
 

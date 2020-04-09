@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const convertSeconds = require('convert-seconds')
+const formatSeconds = require('format-seconds')
 const plural = require('plural')
 // Set up UserSchema
 var User = require('./userSchema').User;
@@ -402,25 +402,8 @@ function getWinExpectancy ( list ) {
     var score = list.count.win + ( list.count.draw / 2 );
 	return ( score / list.count.all * 100 ).toFixed(1)+ "%";
 }
-function formatSeconds ( seconds ) {
-  var duration = convertSeconds( seconds );
-  duration.days = Math.floor(seconds / 60 / 60 / 24);
-  duration.hours = duration.hours % 24;
-  var message = duration.seconds + " " + plural("second", duration.seconds);
-  if ( duration.minutes )
-      message = duration.minutes + " " + plural("minute", duration.minutes);
-  if ( duration.hours )
-      message = duration.hours + " " + plural("hour", duration.hours) + ", " + message;
-  if ( duration.days )
-      message = duration.days + " " + plural("day", duration.days) + ", " + message;
-  return message;
-}
-function toTitleCase ( str ) {
-    return str.replace(/\w\S*/g, function(txt){
-        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-    });
-}
 
 module.exports = {
-	commands: commands
+	commands: commands,
+	formatSeconds: formatSeconds
 }

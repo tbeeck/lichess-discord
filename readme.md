@@ -13,22 +13,20 @@
 
 # Command List
 ```
-
-!setuser <username>
-    Sets your lichess username
-!whoami
-    Returns your current lichess username
-!setgamemode [game mode]
-    Sets your favorite game (or puzzle) mode
+!arena [username]
+    Find an upcoming or recent arena created by lichess (or a user)
+!playing [username]
+    Shares your (or a user's) ongoing game
 !profile [username]
     Displays your (or a user's) profile
 !recent [rated/casual]
     Shares your most recent game
-!playing [username]
-    Shares your (or a user's) ongoing game
+!setgamemode [game mode]
+    Sets your favorite game (or puzzle) mode
+!setuser <username>
+    Sets your lichess username
 !tv [game mode]
     Shares the featured game
-!arena [username]
-    Find an upcoming or recent arena created by lichess (or a user)
-
+!whoami
+    Returns your current lichess username
 ```

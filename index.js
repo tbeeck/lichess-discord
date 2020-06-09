@@ -4,7 +4,10 @@ const util = require('util');
 
 // Set up the database
 const mongoose = require('mongoose');
-mongoose.connect(config.mongourl);
+mongoose.connect(config.mongourl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+});
 
 // Initialize bot
 const bot = new Discord.Client({

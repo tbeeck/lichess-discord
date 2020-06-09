@@ -10,25 +10,20 @@ const tv = require('./commands/tv');
 const whoAmI = require('./commands/whoAmI');
 
 const commands = {
-    "setuser": {
-        usage: "<lichess name>",
-        description: "Sets your lichess username",
-        process: setUser
+    "arena": {
+        usage: "[user]",
+        description: "Find an upcoming or recent arena created by lichess (or a user)",
+        process: arena
     },
     "deleteuser": {
         usage: "",
         description: "Deletes your lichess username from the bot's database",
         process: deleteUser
     },
-    "whoami": {
-        usage: "",
-        description: "Returns your lichess username",
-        process: whoAmI
-    },
-    "setgamemode": {
-        usage: "[game mode]",
-        description: "Sets your favorite game (or puzzle) mode",
-        process: setGameMode
+    "playing": {
+        usage: "[user]",
+        description: "Shares your (or a user's) ongoing game",
+        process: playing
     },
     "profile": {
         usage: "[username]",
@@ -40,21 +35,26 @@ const commands = {
         description: "Shares your most recent game",
         process: recent
     },
-    "playing": {
-        usage: "[user]",
-        description: "Shares your (or a user's) ongoing game",
-        process: playing
+    "setgamemode": {
+        usage: "[game mode]",
+        description: "Sets your favorite game (or puzzle) mode",
+        process: setGameMode
+    },
+    "setuser": {
+        usage: "<lichess name>",
+        description: "Sets your lichess username",
+        process: setUser
     },
     "tv": {
         usage: "[game mode]",
         description: "Shares the featured game",
         process: tv
     },
-    "arena": {
-        usage: "[user]",
-        description: "Find an upcoming or recent arena created by lichess (or a user)",
-        process: arena
-    }
+    "whoami": {
+        usage: "",
+        description: "Returns your lichess username",
+        process: whoAmI
+    },
 };
 
 module.exports = commands;

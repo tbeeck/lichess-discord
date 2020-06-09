@@ -1,5 +1,5 @@
 var assert = require('assert');
-var format = require('../format-seconds');
+var format = require('../lib/format-seconds');
 describe('Commands', function() {
   describe('formatSeconds()', function() {
     it('should format 1 minute', function() {

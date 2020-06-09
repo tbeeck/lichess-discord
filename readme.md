@@ -1,6 +1,6 @@
 # lichess discord bot
 [![Discord Bots](https://discordbots.org/api/widget/status/490949867657494530.svg)](https://discordbots.org/bot/490949867657494530)
-
+[![Build Status](https://travis-ci.org/door-bell/lichess-discord.svg?branch=master)](https://travis-ci.org/door-bell/lichess-discord)
 # Setup
 
 1. Edit `config.example.json` and rename it to `config.json`
@@ -15,6 +15,8 @@
 ```
 !arena [username]
     Find an upcoming or recent arena created by lichess (or a user)
+!deleteuser
+    Deletes your lichess username from the bot's database
 !playing [username]
     Shares your (or a user's) ongoing game
 !profile [username]

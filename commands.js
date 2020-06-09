@@ -1,5 +1,6 @@
 // Include commands
 const arena = require('./commands/arena');
+const deleteUser = require('./commands/deleteUser');
 const setUser = require('./commands/setUser');
 const playing = require('./commands/playing');
 const profile = require('./commands/profile');
@@ -13,6 +14,11 @@ const commands = {
         usage: "<lichess name>",
         description: "Sets your lichess username",
         process: setUser
+    },
+    "deleteuser": {
+        usage: "",
+        description: "Deletes your lichess username from the bot's database",
+        process: deleteUser
     },
     "whoami": {
         usage: "",

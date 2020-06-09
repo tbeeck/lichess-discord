@@ -4,7 +4,7 @@ const countryFlags = require('emoji-flags');
 const formatSeconds = require('./format-seconds');
 const plural = require('plural');
 // Set up UserSchema
-var User = require('./userSchema').User;
+var User = require('./models/User');
 
 var commands = {
     "setuser": {

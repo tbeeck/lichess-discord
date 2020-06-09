@@ -1,6 +1,7 @@
 # lichess discord bot
 [![Discord Bots](https://discordbots.org/api/widget/status/490949867657494530.svg)](https://discordbots.org/bot/490949867657494530)
-[![Build Status](https://travis-ci.org/door-bell/lichess-discord.svg?branch=master)](https://travis-ci.org/door-bell/lichess-discord)
+[![Build Status](https://github.com/door-bell/lichess-discord/workflows/Node.js%20CI/badge.svg)](https://github.com/door-bell/lichess-discord/actions?query=workflow%3A%22Node.js+CI%22)
+
 # Setup
 
 1. Edit `config.example.json` and rename it to `config.json`

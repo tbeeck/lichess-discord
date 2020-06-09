@@ -1,9 +1,10 @@
 {
   "name": "lichessdiscordbot",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A Discord bot to interact with the Lichess API",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "mocha",
     "dev": "./node_modules/.bin/nodemon"
   },

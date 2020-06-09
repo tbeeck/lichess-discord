@@ -1,8 +1,8 @@
 const Discord = require('discord.js');
 const axios = require('axios');
 const countryFlags = require('emoji-flags');
-const formatSeconds = require('format-seconds')
-const plural = require('plural')
+const formatSeconds = require('./format-seconds');
+const plural = require('plural');
 // Set up UserSchema
 var User = require('./userSchema').User;
 
@@ -224,7 +224,7 @@ function sendProfile ( msg, username, favoriteMode ) {
 			msg.channel.send(formattedMessage);
 		})
 		.catch( ( err ) => {
-			console.log( "Error in sendProfile: " + username + " " + err.response.status + " " + err.response.statusText );
+			console.log(err);
 			msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText );
 		});
 }
@@ -315,8 +315,8 @@ function formatProfile ( data, favoriteMode ) {
     .setURL("https://lichess.org/?user=" + data.username + "#friend")
     .setColor(0xFFFFFF)
     .addField("Games ", data.count.rated + " rated, " + (data.count.all - data.count.rated) + " casual", true)
-    .addField("Rating (" + toTitleCase ( mostPlayedMode ) + ")", getMostPlayedRating(data.perfs, mostPlayedMode), true)
-    .addField("Time Played", formatSeconds(data.playTime.total), true)
+    .addField("Rating (" + mostPlayedMode + ")", getMostPlayedRating(data.perfs, mostPlayedMode), true)
+    .addField("Time Played", formatSeconds.formatSeconds(data.playTime.total), true)
     .addField("Win Expectancy ", getWinExpectancy(data), true);
 
 	return formattedMessage;

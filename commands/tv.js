@@ -34,8 +34,9 @@ function tv(bot, msg, suffix) {
             }
             if (!result) {
                 msg.channel.send('You need to set your lichess username with setuser!');
-            }
-            else {
+            } else if (!result.favoriteMode) { 
+                msg.channel.send('You need to set your favorite gamemode with setgamemode!');
+            } else {
                 sendTv(msg, result.favoriteMode);
             }
         });

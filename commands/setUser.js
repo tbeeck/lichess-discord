@@ -15,7 +15,7 @@ function setUser(bot, msg, suffix) {
         }
         else {
             if ((new Date() - result.dateAdded) < (60 * 1000)) { // 1 minute
-                msg.channel.send("You may update your name once per minute. Try again later.");
+                msg.channel.send('You may update your name once per minute. Try again later.');
             }
             else {
                 var newValues = { $set: { lichessName: username, dateAdded: new Date() } };

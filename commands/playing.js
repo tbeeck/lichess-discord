@@ -9,8 +9,10 @@ function sendCurrent(msg, username) {
             msg.channel.send(formattedMessage);
         })
         .catch((err) => {
-            console.log("Error in sendCurrent: " + username + " " + err.response.status + " " + err.response.statusText);
-            msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText);
+            console.log(`Error in playing: \
+                ${suffix} ${err.response.status}  ${err.response.statusText}`);
+            msg.channel.send(`An error occured with your request: \
+                ${err.response.status} ${err.response.statusText}`);
         });
 }
 

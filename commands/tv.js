@@ -8,17 +8,20 @@ function sendTv(msg, favoriteMode) {
             msg.channel.send(formattedMessage);
         })
         .catch((err) => {
-            console.log("Error in sendTv: " + favoriteMode + " " + err.response.status + " " + err.response.statusText);
-            msg.channel.send("An error occured with your request: " + err.response.status + " " + err.response.statusText);
+            console.log(`Error in tv: \
+                ${suffix} ${err.response.status}  ${err.response.statusText}`);
+            msg.channel.send(`An error occured with your request: \
+                ${err.response.status} ${err.response.statusText}`);
         });
 }
 
 function formatTv(data, favoriteMode) {
     for (var channel in data) {
         if (channel.toLowerCase() == favoriteMode)
-            return "https://lichess.org/" + data[channel].gameId;
+            return 'https://lichess.org/' + data[channel].gameId;
     }
-    return "No channel of mode " + favoriteMode + " found!";
+    console.log(data)
+    return `No channel of mode ${favoriteMode} found!`;
 }
 
 function tv(bot, msg, suffix) {
@@ -30,9 +33,10 @@ function tv(bot, msg, suffix) {
                 console.log(err);
             }
             if (!result) {
-                msg.channel.send("You need to set your lichess username with setuser!");
-            }
-            else {
+                msg.channel.send('You need to set your lichess username with setuser!');
+            } else if (!result.favoriteMode) { 
+                msg.channel.send('You need to set your favorite gamemode with setgamemode!');
+            } else {
                 sendTv(msg, result.favoriteMode);
             }
         });

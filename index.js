@@ -27,6 +27,8 @@ if (config.discordbotstoken) {
 
 // Set up commands
 const commands = require('./commands');
+const help = require('./commands/help');
+const stop = require('./commands/stop');
 
 bot.on("ready", () => {
     bot.user.setActivity('lichess.org'); //you can set a default game
@@ -42,30 +44,9 @@ bot.on("message", (msg) => {
     if (msg.author.bot) {
         return;
     }
-    //start special commands
     if ((msg.content[0] === config.prefix)) {
         var cmdTxt = msg.content.split(" ")[0].substring(1);
         var suffix = msg.content.substring(cmdTxt.length + 2);
-    }
-    if (cmdTxt === "help") {
-        var helpText = "";
-        for (var cmd in commands) {
-            var info = config.prefix + cmd;
-            var usage = commands[cmd].usage;
-            if (usage) {
-                info += " " + usage;
-            }
-            var description = commands[cmd].description;
-            if (description) {
-                info += "\n\t" + description;
-            }
-            helpText += "```" + info + "```";
-        }
-        msg.author.send("Available Commands:" + helpText);
-        return;
-    } else if (cmdTxt === "stop" && msg.author.id == config.owner) {
-        bot.logout();
-        process.exit();
     }
     let command = commands[cmdTxt];
     if (command) {
@@ -76,6 +57,10 @@ bot.on("message", (msg) => {
                 console.log("command failed:\n" + e.stack)
                 msg.channel.send("command " + cmdTxt + " failed :(\n" + e.stack);
             }
+    } else if (cmdTxt == "help") {
+        help(bot, msg, suffix);
+    } else if (cmdTxt == "stop") {
+        stop(bot, msg, suffix);
     } else if (config.respondToInvalid) {
         bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);
     }

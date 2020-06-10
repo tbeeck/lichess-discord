@@ -18,6 +18,8 @@
     Find an upcoming or recent arena created by lichess (or a user)
 !deleteuser
     Deletes your lichess username from the bot's database
+!help
+    Sends a list of available commands
 !playing [username]
     Shares your (or a user's) ongoing game
 !profile [username]
@@ -28,6 +30,8 @@
     Sets your favorite game (or puzzle) mode
 !setuser <username>
     Sets your lichess username
+!stop
+    Stops the bot (owner only)
 !tv [game mode]
     Shares the featured game
 !whoami

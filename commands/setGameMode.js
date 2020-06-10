@@ -8,11 +8,11 @@ function setGameMode(bot, msg, suffix) {
             console.log(err);
         }
         if (!result) {
-            msg.channel.send("You need to set your lichess username with setuser!");
+            msg.channel.send('You need to set your lichess username with setuser!');
         } else {
             var newValues = { $set: { favoriteMode: mode } };
             User.updateOne({ userId: authorId }, newValues, (err, updateResult) => {
-                msg.channel.send(msg.author.username + " favorite mode updated!");
+                msg.channel.send(`${msg.author.username} favorite mode updated!`);
             });
         }
     });

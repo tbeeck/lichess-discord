@@ -12,42 +12,44 @@ function sendProfile(msg, username, favoriteMode) {
             msg.channel.send(formattedMessage);
         })
         .catch((err) => {
-            console.log(err);
-            msg.channel.send(`An error occured with your request.`);
+            console.log(`Error in profile: \
+                ${suffix} ${err.response.status}  ${err.response.statusText}`);
+            msg.channel.send(`An error occured with your request: \
+                ${err.response.status} ${err.response.statusText}`);
         });
 }
 
 // Returns a profile in discord markup of a user, returns nothing if error occurs.
 function formatProfile(data, favoriteMode) {
     if (data.closed)
-        return "This account is closed.";
+        return 'This account is closed.';
 
     var colorEmoji;
     if (data.playing) {
-        colorEmoji = data.playing.includes("white") ? "⚪" : "⚫";
+        colorEmoji = data.playing.includes('white') ? '⚪' : '⚫';
     }
-    var status = (!data.online ? "🔴 Offline" : (colorEmoji ? colorEmoji + " Playing" : "📶 Online"));
+    var status = (!data.online ? '🔴 Offline' : (colorEmoji ? colorEmoji + ' Playing' : '📶 Online'));
     if (data.streaming)
-        status = "📡 Streaming  " + status;
+        status = '📡 Streaming  ' + status;
 
-    var flag = "";
+    var flag = '';
     if (data.profile && data.profile.country)
         flag = countryFlags.countryCode(data.profile.country).emoji;
 
     var playerName = data.username;
     if (data.title)
-        playerName = data.title + " " + playerName;
+        playerName = data.title + ' ' + playerName;
 
     var mostPlayedMode = getMostPlayedMode(data.perfs, favoriteMode);
     var formattedMessage = new Discord.RichEmbed()
-        .setAuthor(flag + " " + playerName + "  " + status, null, data.url)
-        .setTitle("Challenge " + data.username + " to a game!")
-        .setURL("https://lichess.org/?user=" + data.username + "#friend")
+        .setAuthor(flag + ' ' + playerName + '  ' + status, null, data.url)
+        .setTitle('Challenge ' + data.username + ' to a game!')
+        .setURL('https://lichess.org/?user=' + data.username + '#friend')
         .setColor(0xFFFFFF)
-        .addField("Games ", data.count.rated + " rated, " + (data.count.all - data.count.rated) + " casual", true)
-        .addField("Rating (" + mostPlayedMode + ")", getMostPlayedRating(data.perfs, mostPlayedMode), true)
-        .addField("Time Played", formatSeconds.formatSeconds(data.playTime.total), true)
-        .addField("Win Expectancy ", getWinExpectancy(data), true);
+        .addField('Games ', data.count.rated + ' rated, ' + (data.count.all - data.count.rated) + ' casual', true)
+        .addField('Rating (' + mostPlayedMode + ')', getMostPlayedRating(data.perfs, mostPlayedMode), true)
+        .addField('Time Played', formatSeconds.formatSeconds(data.playTime.total), true)
+        .addField('Win Expectancy ', getWinExpectancy(data), true);
 
     return formattedMessage;
 }
@@ -86,18 +88,18 @@ function getMostPlayedRating(list, mostPlayedMode) {
             mostPlayedRD = modes[i][1].rd;
             mostPlayedProg = modes[i][1].prog;
             mostPlayedRating = modes[i][1].rating;
-            mostPlayedGames = modes[i][1].games + " " + plural((mostPlayedMode == "puzzle" ? "attempt" : " game"), modes[i][1].games);
+            mostPlayedGames = modes[i][1].games + ' ' + plural((mostPlayedMode == 'puzzle' ? 'attempt' : ' game'), modes[i][1].games);
         }
     }
     if (mostPlayedProg > 0)
-        mostPlayedProg = " ▲" + mostPlayedProg + "📈";
+        mostPlayedProg = ' ▲' + mostPlayedProg + '📈';
     else if (mostPlayedProg < 0)
-        mostPlayedProg = " ▼" + Math.abs(mostPlayedProg) + "📉";
+        mostPlayedProg = ' ▼' + Math.abs(mostPlayedProg) + '📉';
     else
-        mostPlayedProg = "";
+        mostPlayedProg = '';
 
-    var formattedMessage = mostPlayedRating + " ± " + (2 * mostPlayedRD) +
-        mostPlayedProg + " over " + mostPlayedGames;
+    var formattedMessage = mostPlayedRating + ' ± ' + (2 * mostPlayedRD) +
+        mostPlayedProg + ' over ' + mostPlayedGames;
     return formattedMessage;
 }
 // For sorting through modes... lichess api does not put these in an array so we do it ourselves
@@ -118,7 +120,7 @@ function modesArray(list) {
 // Get win/result expectancy (draws count as 0.5)
 function getWinExpectancy(list) {
     var score = list.count.win + (list.count.draw / 2);
-    return (score / list.count.all * 100).toFixed(1) + "%";
+    return (score / list.count.all * 100).toFixed(1) + '%';
 }
 
 function profile(bot, msg, suffix) {

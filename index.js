@@ -30,41 +30,41 @@ const commands = require('./commands');
 const help = require('./commands/help');
 const stop = require('./commands/stop');
 
-bot.on("ready", () => {
+bot.on('ready', () => {
     bot.user.setActivity('lichess.org'); //you can set a default game
     console.log(`Bot is online!\n${bot.users.size} users, in ${bot.guilds.size} servers connected.`);
 });
 
-bot.on("guildCreate", (guild) => {
+bot.on('guildCreate', (guild) => {
     console.log(`I've joined the guild ${guild.name} (${guild.id}), owned by ${guild.owner.user.username}.`);
 });
 
-bot.on("message", (msg) => {
+bot.on('message', (msg) => {
     //drop bot messages (including our own) to prevent feedback loops
     if (msg.author.bot) {
         return;
     }
-    let cmdTxt = "";
-    let suffix = "";
+    let cmdTxt = '';
+    let suffix = '';
     if (msg.content[0] === config.prefix) {
-        cmdTxt = msg.content.split(" ")[0].substring(1);
+        cmdTxt = msg.content.split(' ')[0].substring(1);
         suffix = msg.content.substring(cmdTxt.length + 2);
     }
     let command = commands[cmdTxt];
     if (command) {
-        console.log("Treating " + msg.content + " from " + msg.author + "(" + msg.author.username + ") as command");
+        console.log(`Treating  ${msg.content} from ${msg.author} (${msg.author.username}) as command`);
         try {
             commands[cmdTxt].process(bot, msg, suffix);
         } catch (e) {
-            console.log("command failed:\n" + e.stack)
-            msg.channel.send("command " + cmdTxt + " failed :(\n" + e.stack);
+            console.log(`Command failed:\n ${e.stack}`);
+            msg.channel.send(`Command ${cmdTxt} failed :(\n ${e.stack}`);
         }
-    } else if (cmdTxt == "help") {
+    } else if (cmdTxt == 'help') {
         help(bot, msg, suffix);
-    } else if (cmdTxt == "stop") {
+    } else if (cmdTxt == 'stop') {
         stop(bot, msg, suffix);
     } else if (config.respondToInvalid) {
-        bot.sendMessage(msg.channel, "Invalid command " + cmdTxt);
+        bot.sendMessage(msg.channel, `Invalid command: ${cmdTxt}`);
     }
 });
 

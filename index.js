@@ -46,7 +46,7 @@ bot.on("message", (msg) => {
     }
     let cmdTxt = "";
     let suffix = "";
-    if ((msg.content[0] === config.prefix)) {
+    if (msg.content[0] === config.prefix) {
         cmdTxt = msg.content.split(" ")[0].substring(1);
         suffix = msg.content.substring(cmdTxt.length + 2);
     }

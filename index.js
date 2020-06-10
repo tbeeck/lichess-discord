@@ -44,19 +44,21 @@ bot.on("message", (msg) => {
     if (msg.author.bot) {
         return;
     }
+    let cmdTxt = "";
+    let suffix = "";
     if ((msg.content[0] === config.prefix)) {
-        var cmdTxt = msg.content.split(" ")[0].substring(1);
-        var suffix = msg.content.substring(cmdTxt.length + 2);
+        cmdTxt = msg.content.split(" ")[0].substring(1);
+        suffix = msg.content.substring(cmdTxt.length + 2);
     }
     let command = commands[cmdTxt];
     if (command) {
-            console.log("Treating " + msg.content + " from " + msg.author + "(" + msg.author.username + ") as command");
-            try {
-                commands[cmdTxt].process(bot, msg, suffix);
-            } catch (e) {
-                console.log("command failed:\n" + e.stack)
-                msg.channel.send("command " + cmdTxt + " failed :(\n" + e.stack);
-            }
+        console.log("Treating " + msg.content + " from " + msg.author + "(" + msg.author.username + ") as command");
+        try {
+            commands[cmdTxt].process(bot, msg, suffix);
+        } catch (e) {
+            console.log("command failed:\n" + e.stack)
+            msg.channel.send("command " + cmdTxt + " failed :(\n" + e.stack);
+        }
     } else if (cmdTxt == "help") {
         help(bot, msg, suffix);
     } else if (cmdTxt == "stop") {

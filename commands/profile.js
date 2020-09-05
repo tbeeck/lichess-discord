@@ -13,7 +13,7 @@ function sendProfile(msg, username, favoriteMode) {
         })
         .catch((err) => {
             console.log(`Error in profile: \
-                ${suffix} ${err.response.status}  ${err.response.statusText}`);
+                ${favoriteMode} ${err.response.status}  ${err.response.statusText}`);
             msg.channel.send(`An error occured with your request: \
                 ${err.response.status} ${err.response.statusText}`);
         });
@@ -33,7 +33,7 @@ function formatProfile(data, favoriteMode) {
         status = '📡 Streaming  ' + status;
 
     var flag = '';
-    if (data.profile && data.profile.country)
+    if (data.profile && data.profile.country && countryFlags.countryCode(data.profile.country))
         flag = countryFlags.countryCode(data.profile.country).emoji;
 
     var playerName = data.username;

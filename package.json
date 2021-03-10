@@ -16,7 +16,7 @@
   "author": "Tim Beck",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "convert-seconds": "^1.0.1",
     "dblapi.js": "^2.3.0",
     "discord.js": "^11.4.2",

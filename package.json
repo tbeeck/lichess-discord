@@ -23,7 +23,7 @@
     "emoji-flags": "^1.2.0",
     "express": "^4.16.4",
     "mocha": "^7.1.1",
-    "mongoose": "^5.3.11",
+    "mongoose": "^6.13.9",
     "plural": "^1.1.0"
   },
   "devDependencies": {
